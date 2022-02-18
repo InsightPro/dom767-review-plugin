@@ -119,18 +119,15 @@
     border-radius: 50%;
 }
 .reviewer-single-info {
-    /* display: inline-block;
-    display: -webkit-box; */
     display: inline-flex;
-    /* border-bottom: 2px dashed #ddd; */
     margin-bottom: 10px !important;
 }
 .reply-single-info {
-    /* display: inline-block;
-    display: -webkit-box; */
-    display: inline-flex;
+    display: none;
     margin-bottom: 10px !important;
-    /* border-top: 2px dashed #ddd; */
+}
+.review_card.reply-single-info {
+    background-color: #eef5f0;
 }
 .reviewer-single-info-data {
     margin-left: 10px;
@@ -434,18 +431,26 @@ h4.did_user_review_text_h4 {
     font-weight: 300;
 }
 
-.review_card.reply-single-info {
-    background-color: #eef5f0;
-}
-
 .review_card.reviewer-single-info {
     background-color: #eef5f0;
 }
 
 
-
+/* .comments-single-info {
+   display: inline-flex !important;
+} */
+.comments-single-info {
+    margin-bottom: 10px !important;
+    display: none;
+    background-color: #eef5f0;
+}
+.view_all_comments_btn{
+    margin-bottom: 10px !important;
+    text-align: center;
+}
 
 /******* need to delete **********/
 div#dom767-listing-review {
     display: none !important;
 }
+

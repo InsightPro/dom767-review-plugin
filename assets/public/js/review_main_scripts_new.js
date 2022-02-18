@@ -9,13 +9,15 @@ jQuery(document).ready(function($){
   }
   /************************************************************************************/
 
+  var page_no = 1 ;
+
   var current_user_id = dom_review_list.current_user_id;
 
   var alert_danger = '<div class="dom767-review-alert-danger" role="alert"><span class="review-alert-danger-text">This is a danger alert—check it out!</span><i class="far fa-times-circle review_alert_close"></i></div>';
 
   var alert_success ='<div class="dom767-review-alert-success" role="alert"><span class="review-alert-success-text">This is a danger alert—check it out!</span><i class="far fa-times-circle review_alert_close"></i></div>';
 
-  
+
   /******************************* delete unused img **********************************/
 
   var uploaded_review_img = (typeof Cookies.get("uploaded_review_image") != "undefined") ? Cookies.get("uploaded_review_image") : '';// get file field value using field id
@@ -39,6 +41,26 @@ jQuery(document).ready(function($){
   }
   /************************************************************************************/
 
+
+  /******************************* Show 1 comment **********************************/
+  $(".comments-single-info").each(function(){
+    //$(".comments-single-info:first-child").show();
+    $(".comments-single-info:first-child").css('display', 'inline-flex');
+  });
+  /******************************* Show all comment **********************************/
+  $(document).on('click', '.view_all_comments_btn', function(e){
+    var sib = $(this).next('.dom767_review_reply_main_wrap').find(".comments-single-info");
+    //$(sib).show();
+    $(sib).css('display', 'inline-flex');
+    $(this).hide();
+  });
+
+  $(document).on('click', '.view_all_comment_reply_btn', function(e){
+    var sib = $(this).parent().next('.dom767_comment_reply_main_wrap').find(".reply-single-info");
+    //$(sib).show();
+    $(sib).css('display', 'inline-flex');
+    $(this).hide();
+  });
 
 
   /*********************************** Rating Star ************************************/
@@ -73,7 +95,7 @@ jQuery(document).ready(function($){
   /******************************** Reply form open ******************************/
 
   $(document).on('click', '#dom767_review_reply_button', function poen_review_reply_form(e){
-
+    //console.log(page_no);
     //$(this).find('span').attr('data-id');
     $('.review-reply-form-wrap').remove();
     $('.review-edit-form-wrap').remove();
@@ -150,7 +172,8 @@ jQuery(document).ready(function($){
         action: "dom767_review_form_submit",
         security: dom_review_list.security,
         post_id : post_id,
-        form_data: form_data
+        form_data: form_data,
+        page_no: page_no
       };
 
       $.ajax({
@@ -172,6 +195,10 @@ jQuery(document).ready(function($){
 
           Cookies.remove("uploaded_review_image");/// set new fav cookies data for 1 days
           $('#dom767_review_form_submit_btn').text("Leave Your Review");
+
+          $(".comments-single-info").each(function(){
+            $(".comments-single-info:first-child").css('display', 'inline-flex');
+          });
         }
       });
       
@@ -209,7 +236,8 @@ jQuery(document).ready(function($){
         action: "dom767_edit_form_submit",
         security: dom_review_list.security,
         post_id : post_id,
-        form_data: form_data
+        form_data: form_data,
+        page_no: page_no
       };
 
       $.ajax({
@@ -221,6 +249,9 @@ jQuery(document).ready(function($){
           $('#review_list_wrap_main').html(result.data);
           $('#dom767_review_form_submit_btn').text("Leave Your Review");
           $(this).find('#dom767-edit-review-submit').val("Submit");
+          $(".comments-single-info").each(function(){
+            $(".comments-single-info:first-child").css('display', 'inline-flex');
+          });
         }
       });
       
@@ -255,7 +286,8 @@ jQuery(document).ready(function($){
         action: "dom767_reply_form_submit",
         security: dom_review_list.security,
         post_id : post_id,
-        form_data: form_data
+        form_data: form_data,
+        page_no: page_no
       };
 
       $.ajax({
@@ -266,6 +298,9 @@ jQuery(document).ready(function($){
           var result = JSON.parse(data_res);
           $('#review_list_wrap_main').html(result.data);
           $(this).find('#dom767-reply-submit').val("Submit");
+          $(".comments-single-info").each(function(){
+            $(".comments-single-info:first-child").css('display', 'inline-flex');
+          });
         }
       });
       
@@ -485,6 +520,7 @@ jQuery(document).ready(function($){
     var current_page  = parseInt(current_page);
     var page          = current_page + 1;
     var that          = $(this);
+        page_no       = page;
 
     $(this).text('Please waite, Loading...');
 
@@ -508,7 +544,9 @@ jQuery(document).ready(function($){
         if (total_page == page) {
           $('.dom767-load-more-review').fadeOut();
         }
-        console.log(page);
+        $(".comments-single-info").each(function(){
+          $(".comments-single-info:first-child").css('display', 'inline-flex');
+        });
       }
     });
 

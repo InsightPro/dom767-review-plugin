@@ -3,6 +3,32 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+function _time_ago($time){
+
+  $periods = array("second", "minute", "hour", "day", "week", "month", "year", "decade");
+  $lengths = array("60","60","24","7","4.35","12","10");
+
+  $now        = time();
+  $difference = $now - $time;
+  $tense      = "ago";
+
+  for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+    $difference /= $lengths[$j];
+  }
+
+  $difference = round($difference);
+
+  if($difference != 1) {
+    $periods[$j].= "s";
+  }
+
+  $result = $difference.' '.$periods[$j].' ago';
+   return  $result;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
 function dom767_post_total_review($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
@@ -246,6 +272,53 @@ function get_replied_to_user_name($parent_ID){
   return $replied_to;
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// is user comment on review ///////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+function is_user_comment_on_review($review_ID){
+  global $wpdb, $post;
+  $cur_user_id = get_current_user_id();
+  $is_comment_query = $wpdb->get_results('SELECT user_id FROM wp_dom767_reviews WHERE review_parent ='.$review_ID.' AND user_id ='.$cur_user_id.' ORDER BY review_ID DESC');
+  $is_comment_query = $is_comment_query[0]->user_id;
+  $is_user_comment = ($is_comment_query != NULL)? 'true' : 'false';
+  return $is_user_comment;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// get review comment count /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+function get_review_comment_count($review_ID){
+  global $wpdb, $post;
+  //$post_id = ($post_id != '')? $post_id : get_the_ID();
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' ORDER BY review_ID DESC');
+  $reply_count = count($review_query);
+  return $reply_count;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// get comment reply count /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+function get_comment_reply_count($review_ID){
+  global $wpdb, $post;
+  //$post_id = ($post_id != '')? $post_id : get_the_ID();
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' ORDER BY review_ID DESC');
+  $reply_count = count($review_query);
+  return $reply_count;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////// get review reply count /////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+function get_review_CommentAndReply_count($review_ID){
+  global $wpdb, $post;
+  //$post_id = ($post_id != '')? $post_id : get_the_ID();
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_karma = '.$review_ID.' ORDER BY review_ID DESC');
+  $reply_count = count($review_query);
+  return $reply_count;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////// get review reply /////////////////////////////////
@@ -373,21 +446,143 @@ function get_review_reply($post_id, $parent_ID){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// get review reply count /////////////////////////////
+//////////////////////////////// get review comment ///////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-function get_review_reply_count($post_id, $review_ID){
+
+function get_review_comments($post_id, $parent_ID){
   global $wpdb, $post;
+  $current_user_id = get_current_user_id();
   $post_id = ($post_id != '')? $post_id : get_the_ID();
-  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_karma = '.$review_ID.' ORDER BY review_ID DESC');
-  $reply_count = count($review_query);
-  return $reply_count;
+  $reply_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
+  //var_dump($reply_query);
+  foreach ($reply_query as $query_data) {
+    $review_ID            = $query_data->review_ID;
+    $review_post_ID       = $query_data->review_post_ID;
+    $review_author        = $query_data->review_author;
+    $review_author_email  = $query_data->review_author_email;
+    $review_author_url    = $query_data->review_author_url;
+    $review_author_IP     = $query_data->review_author_IP;
+    $review_date          = $query_data->review_date;
+    $review_date_gmt      = $query_data->review_date_gmt;
+    $review_content       = $query_data->review_content;
+    $review_rating        = $query_data->review_rating;
+    $review_karma         = $query_data->review_karma;
+    $review_approved      = $query_data->review_approved;
+    $review_agent         = $query_data->review_agent;
+    $review_type          = $query_data->review_type;
+    $review_parent        = $query_data->review_parent;
+    $user_id              = $query_data->user_id;
+    $karma                = $review_karma;
+    $commentType          = is_comment_or_reply($review_parent);
+    $reply_to_user_name   = get_replied_to_user_name($review_parent);
+
+    $totalComentReplyCount = get_comment_reply_count($review_ID);
+
+
+    //////////////////////// review meta query ///////////////////////////////
+    $vote_query = $wpdb->get_results('SELECT * FROM wp_dom767_review_meta WHERE review_id ='.$review_ID.' AND meta_key = "dom_review_vote" ORDER BY review_ID DESC');
+
+    $total_like = 0;
+    $total_dislike = 0;
+    $did_user_vote = 'false';
+    if ($vote_query) {
+      foreach ($vote_query as $vote_object) {
+        $vote_arr = json_decode($vote_object->meta_value);
+        $current_user = get_current_user_id();
+        if ($vote_arr->user == $current_user) {
+          $meta_id = $vote_object->meta_id;
+          $did_user_vote = 'true';
+          $user_vote_val = $vote_arr->vote;
+        }
+        if ($vote_arr->vote == "like") {
+          $total_like ++;
+        }
+        if ($vote_arr->vote == "dislike") {
+          $total_dislike ++;
+        }
+      }///end foreach
+    }///end if
+
+    /////////////////////////////////////////////////////////////////////////
+    
+    ?>
+
+    <div class="review_card comments-single-info">
+      <div class="single-rev-avater">
+        <div class="reviewer-avater">
+          <?php echo get_avatar( $user_id ); ?>
+        </div>
+      </div>
+      <div class="reviewer-single-info-data">
+        <div class="display-inline-block">
+          <div class="reviewer-name">
+            <p class="reviewer-fullname">
+              <strong><?php echo $review_author ?></strong>
+              <?php echo ($commentType == 'reply')? ' <i class="fa fa-caret-right"></i> '.$reply_to_user_name : '';?>
+            </p>
+          </div>
+          <?php //echo get_single_user_post_star_rating($review_ID,$user_id, $review_post_ID) ?>
+          
+        </div>
+        <div class="review_date_div">
+          <p class="review-date-text"> <?php echo _time_ago($review_date) ?></p>
+        </div>
+        <div class="review-content-div">
+          <div class="review-content">
+            <p class="review-content-text"><?php echo $review_content ?></p>
+          </div>
+        </div>
+        <ul class="list-inline d-sm-flex my-0">
+          <li class="list-inline-item g-mr-20">
+            <span class="dom767_review_like_dislike" id="review_like_button_<?php echo $review_ID ?>" data-value="like" data-did_vote="<?php echo $did_user_vote ?>" data-vote_val="<?php echo $user_vote_val ?>" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
+              <i class="fa fa-thumbs-up"></i>
+              <bdi><?php echo $total_like ?></bdi>
+            </span>
+          </li>
+          <li class="list-inline-item g-mr-20">
+            <span class="dom767_review_like_dislike" id="review_dislike_button_<?php echo $review_ID ?>" data-value="dislike" data-did_vote="<?php echo $did_user_vote ?>" data-vote_val="<?php echo $user_vote_val ?>" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
+              <i class="fa fa-thumbs-down"></i>
+              <bdi><?php echo $total_dislike ?></bdi>
+            </span>
+          </li>
+          <!-- <li class="list-inline-item ml-auto">
+            <span class="dom767_review_reply_button" id="dom767_review_reply_button" data-parent_ID="<?php echo $review_ID ?>" data-karma="<?php echo $karma ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
+              <i class="fa fa-reply"></i>
+              Reply
+            </span>
+          </li> -->
+          <?php if ($user_id == $current_user_id  ): ?>
+          <li class="list-inline-item ml-auto">
+            <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
+              <i class="fa fa-edit"></i>
+              Edit
+            </span>
+          </li>
+          <?php endif ?>
+        </ul>
+      </div>
+      <?php if ($totalComentReplyCount > 0): ?>
+        <button type="button" class="review_card view_all_comment_reply_btn" style="" > 
+          This Comment has  <?php echo $totalComentReplyCount ?> reply. 
+          View All
+          <i class="fa fa-arrow-down"> </i>
+        </button>
+      <?php endif ?>
+    </div>
+    <!-- <div class="dom767_comment_reply_main_wrap" style="margin-left: 50px">
+    <?php //echo get_review_reply($post_id, $review_ID); ?>
+    </div> -->
+    <?php
+
+  }///end foreach
+
+  return;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////// get review //////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
+
 function get_review($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
@@ -427,11 +622,10 @@ function get_review($post_id){
 //////////////////////////// post review list template ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-
-function review_list_template($post_id){
+function review_list_template($post_id, $page_no){
 
   global $wpdb, $post;
-
+  //var_dump($page_no);
   $post_id          = ($post_id != '') ? $post_id : get_the_ID();
   $current_user_id  = get_current_user_id();
   $upload_dir       = wp_upload_dir();// Upload directory
@@ -444,9 +638,10 @@ function review_list_template($post_id){
 
   if ($review_query) {
     $limit          = 5;
+    $limits          = $limit * $page_no;
     $total_item     = count($review_query);
     $total_pages    = ceil($total_item/$limit);
-    $review_query   = array_slice( $review_query, 0, $limit ); 
+    $review_query   = array_slice( $review_query, 0, $limits ); 
     ?>
     <div class="review_list_wrap">
       <div class="row">
@@ -476,6 +671,9 @@ function review_list_template($post_id){
               $review_parent        = $query_data['review_parent'];
               $user_id              = $query_data['user_id'];
               $karma                = ($review_parent == 0)? $review_ID : $review_karma;
+              $totalComentCount     = get_review_comment_count($review_ID);
+              $commentAndReplycount = get_review_CommentAndReply_count($review_ID);
+              $is_user_commented    = is_user_comment_on_review($review_ID);
 
               //////////////////////// review meta query ///////////////////////////////
 
@@ -529,7 +727,7 @@ function review_list_template($post_id){
                       
                     </div>
                     <div class="review_date_div">
-                      <p class="review-date-text"> <?php echo $review_date ?></p>
+                      <p class="review-date-text"> <?php echo _time_ago($review_date) ?></p>
                     </div>
                     <div class="review-content-div">
                       <div class="review-content">
@@ -554,13 +752,15 @@ function review_list_template($post_id){
                           <bdi><?php echo $total_dislike ?></bdi>
                         </span>
                       </li>
+                      <?php if ($user_id != $current_user_id && $is_user_commented == 'false'): ?>
                       <li class="list-inline-item ml-auto">
                         <span class="dom767_review_reply_button" id="dom767_review_reply_button" data-parent_ID="<?php echo $review_ID ?>" data-karma="<?php echo $karma ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                           <i class="far fa-comment-alt"></i>
                           Comment
                         </span>
                       </li>
-                      <?php if ($user_id == $current_user_id  ): ?>
+                      <?php endif ?>
+                      <?php if ($user_id == $current_user_id): ?>
                       <li class="list-inline-item ml-auto">
                         <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                           <i class="fa fa-edit"></i>
@@ -571,23 +771,32 @@ function review_list_template($post_id){
                       <li class="list-inline-item1 ml-auto" style="float: right;">
                         <span class="dom767_review_comment_count" id="dom767_review_comment_count" data-parent_ID="<?php echo $review_ID ?>" data-karma="<?php echo $karma ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                           <i class="far fa-comment-dots"></i>
-                          <?php echo get_review_reply_count($post_id, $review_ID) ?>
+                          <?php echo $commentAndReplycount ?>
                         </span>
                       </li>
                     </ul>
                   </div>
                 </div>
+
+                <?php if ($totalComentCount > 1): ?>
+                  <button type="button" class="review_card view_all_comments_btn" style="" > 
+                    Total:  <?php echo $totalComentCount ?> Comments. 
+                    View All
+                    <i class="fa fa-arrow-down"> </i>
+                  </button>
+                <?php endif ?>
                 <div class="dom767_review_reply_main_wrap" id="review_reply_main_wrap_<?php echo $review_ID?>" style="margin-left: 50px">
-                <?php echo get_review_reply($post_id, $review_ID); ?>
+                <?php echo get_review_comments($post_id, $review_ID); ?>
                 </div>
+
               <?php endif ?><!-- end if review parent = 0 -->
 
               <?php
             }///end foreach
             ?>
             </div>
-            <?php if ($total_pages > 1): ?>
-              <button type="button" class="btn dom767-load-more-review btn-success" data-post-id="<?php echo $post_id ?>" data-total-page="<?php echo $total_pages ?>" data-current-page="1" >Load More</button>
+            <?php if ($total_pages > 1 && $page_no < $total_pages): ?>
+              <button type="button" class="btn dom767-load-more-review btn-success" data-post-id="<?php echo $post_id ?>" data-total-page="<?php echo $total_pages ?>" data-current-page="<?php echo $page_no ?>" >Load More</button>
             <?php endif ?>
           </div>
         </div>
@@ -597,7 +806,6 @@ function review_list_template($post_id){
   }
   return;
 }
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -610,6 +818,7 @@ function get_review_form_wrap($post_id) {
   $post_id = ($post_id != '')? $post_id : get_the_ID();
   $total_review     = dom767_post_total_review($post_id);
   $did_user_review  = dom767_did_user_review($post_id);
+  $page_no = 1;
 	?>
   <div class="review-form-and-list-wrap" >
   	<div class="review-form-wrap">
@@ -716,7 +925,7 @@ function get_review_form_wrap($post_id) {
     </div> 
 
     <div class="review_list_wrap_main" id="review_list_wrap_main" >
-      <?php echo review_list_template($post_id); ?>
+      <?php echo review_list_template($post_id, $page_no); ?>
     </div>
   </div>
 
@@ -738,6 +947,8 @@ function dom767_review_form_submit() {
   ob_start();
   global $wpdb , $post;
 
+  $page_no      = isset( $_POST['page_no'] ) ? $_POST['page_no'] : '';///page number
+  $page_no      = (int)$page_no;
   $form_datas   = isset( $_POST['form_data'] ) ? $_POST['form_data'] : '';///get form data
   $post_id      = isset( $_POST['post_id'] ) ? $_POST['post_id'] : '';///get post id
   $post_id      = (int)$post_id;
@@ -783,6 +994,7 @@ function dom767_review_form_submit() {
       $lastid = $wpdb->get_results('SELECT review_ID FROM wp_dom767_reviews ORDER BY review_ID DESC LIMIT 1');
       $lastid = ($lastid)? $lastid[0]->review_ID : 0 ;
       $lastid = $lastid + 1;
+      $timestamp = time();
 
       $data=array(
         'review_ID'           => $lastid, 
@@ -791,8 +1003,8 @@ function dom767_review_form_submit() {
         'review_author_email' => $user_email,
         'review_author_url'   => $user_url, 
         'review_author_IP'    => $ipaddress, 
-        'review_date'         => date("y-m-d h:i:s"), 
-        'review_date_gmt'     => date("y-m-d h:i:s"), 
+        'review_date'         => time(), 
+        'review_date_gmt'     => time(), 
         'review_content'      => $form_data_arr['review'], 
         'review_karma'        => 0, 
         'review_rating'       => $form_data_arr['rating'], 
@@ -825,7 +1037,7 @@ function dom767_review_form_submit() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  echo review_list_template($post_id);
+  echo review_list_template($post_id, $page_no);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -898,10 +1110,11 @@ add_action( 'wp_ajax_dom767_edit_form_submit', 'dom767_edit_form_submit' );
 add_action( 'wp_ajax_nopriv_dom767_edit_form_submit', 'dom767_edit_form_submit' );
 
 function dom767_edit_form_submit() {
-
   ob_start();
   global $wpdb , $post;
 
+  $page_no      = isset( $_POST['page_no'] ) ? $_POST['page_no'] : '';///page number
+  $page_no      = (int)$page_no;
   $form_datas   = isset( $_POST['form_data'] ) ? $_POST['form_data'] : '';///get form data
   $post_id      = isset( $_POST['post_id'] ) ? $_POST['post_id'] : '';///get post id
   $post_id      = (int)$post_id;
@@ -937,12 +1150,12 @@ function dom767_edit_form_submit() {
       }else{
           $ipaddress = 'UNKNOWN';
       }
-
+      $timestamp = time();
 
       $data=array( 
         'review_author_IP'    => $ipaddress, 
-        'review_date'         => date("y-m-d h:i:s"), 
-        'review_date_gmt'     => date("y-m-d h:i:s"), 
+        'review_date'         => time(), 
+        'review_date_gmt'     => time(), 
         'review_content'      => $form_data_arr['review'], 
         'review_agent'        => $_SERVER['HTTP_USER_AGENT'], 
       );
@@ -956,7 +1169,7 @@ function dom767_edit_form_submit() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  echo review_list_template($post_id);
+  echo review_list_template($post_id, $page_no);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -984,6 +1197,8 @@ function dom767_reply_form_submit() {
   ob_start();
   global $wpdb , $post;
 
+  $page_no      = isset( $_POST['page_no'] ) ? $_POST['page_no'] : '';///page number
+  $page_no      = (int)$page_no;
   $form_datas   = isset( $_POST['form_data'] ) ? $_POST['form_data'] : '';///get form data
   $post_id      = isset( $_POST['post_id'] ) ? $_POST['post_id'] : '';///get post id
   $post_id      = (int)$post_id;
@@ -1031,6 +1246,7 @@ function dom767_reply_form_submit() {
       $lastid     = $wpdb->get_results('SELECT review_ID FROM wp_dom767_reviews ORDER BY review_ID DESC LIMIT 1');
       $lastid = ($lastid)? $lastid[0]->review_ID : 0 ;
       $lastid = $lastid + 1;
+      $timestamp = time();
 
       $data=array(
         'review_ID'           => $lastid, 
@@ -1039,8 +1255,8 @@ function dom767_reply_form_submit() {
         'review_author_email' => $user_email,
         'review_author_url'   => $user_url, 
         'review_author_IP'    => $ipaddress, 
-        'review_date'         => date("y-m-d h:i:s"), 
-        'review_date_gmt'     => date("y-m-d h:i:s"), 
+        'review_date'         => time(), 
+        'review_date_gmt'     => time(), 
         'review_content'      => $form_data_arr['review'], 
         'review_karma'        => $karma, 
         'review_rating'       => 0, 
@@ -1061,7 +1277,7 @@ function dom767_reply_form_submit() {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  echo review_list_template($post_id);
+  echo review_list_template($post_id, $page_no);
 
   /////////////////////////////////////////////////////////////////////////////
   $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0');
@@ -1446,6 +1662,9 @@ function dom767_review_load_more(){
       $review_parent        = $query_data['review_parent'];
       $user_id              = $query_data['user_id'];
       $karma                = ($review_parent == 0)? $review_ID : $review_karma;
+      $totalComentCount     = get_review_comment_count($review_ID);
+      $commentAndReplycount = get_review_CommentAndReply_count($review_ID);
+      $is_user_commented    = is_user_comment_on_review($review_ID);
 
       //////////////////////// review meta query ///////////////////////////////
 
@@ -1495,7 +1714,7 @@ function dom767_review_load_more(){
               
             </div>
             <div class="review_date_div">
-              <p class="review-date-text"> <?php echo $review_date ?></p>
+              <p class="review-date-text"> <?php echo _time_ago(strtotime($review_date)) ?></p>
             </div>
             <div class="review-content-div">
               <div class="review-content">
@@ -1520,12 +1739,14 @@ function dom767_review_load_more(){
                   <bdi><?php echo $total_dislike ?></bdi>
                 </span>
               </li>
+              <?php if ($user_id != $current_user_id && $is_user_commented == 'false'): ?>
               <li class="list-inline-item ml-auto">
                 <span class="dom767_review_reply_button" id="dom767_review_reply_button" data-parent_ID="<?php echo $review_ID ?>" data-karma="<?php echo $karma ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
-                  <i class="fa fa-reply"></i>
-                  Reply
+                  <i class="far fa-comment-alt"></i>
+                  Comment
                 </span>
               </li>
+              <?php endif ?>
               <?php if ($user_id == $current_user_id  ): ?>
               <li class="list-inline-item ml-auto">
                 <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
@@ -1534,15 +1755,27 @@ function dom767_review_load_more(){
                 </span>
               </li>
               <?php endif ?>
+              <li class="list-inline-item1 ml-auto" style="float: right;">
+                <span class="dom767_review_comment_count" id="dom767_review_comment_count" data-parent_ID="<?php echo $review_ID ?>" data-karma="<?php echo $karma ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
+                  <i class="far fa-comment-dots"></i>
+                  <?php echo $commentAndReplycount ?>
+                </span>
+              </li>
             </ul>
           </div>
         </div>
-        <?php
-        $reply_count = get_review_reply_count($post_id, $review_ID);
-        ?>
+
+        <?php if ($totalComentCount > 1): ?>
+          <button type="button" class="review_card view_all_comments_btn" style="" > 
+            Total:  <?php echo $totalComentCount ?> comments. 
+            View All
+            <i class="fa fa-arrow-down"> </i>
+          </button>
+        <?php endif ?>
         <div class="dom767_review_reply_main_wrap" id="review_reply_main_wrap_<?php echo $review_ID?>" style="margin-left: 50px">
-        <?php echo get_review_reply($post_id, $review_ID); ?>
+        <?php echo get_review_comments($post_id, $review_ID); ?>
         </div>
+
       <?php endif ?><!-- end if review parent = 0 -->
 
       <?php
