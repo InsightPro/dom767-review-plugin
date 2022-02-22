@@ -64,7 +64,31 @@ jQuery(document).ready(function($){
     });
   }
   /************************************************************************************/
- 
+  /************ clicked on comment form close btn remove uploaded image **************/
+  //$('.comment_form_close_btn, .dom767_review_reply_button').on('click', function(e){
+  $(document).on('click touchend', '.comment_form_close_btn, .dom767_review_reply_button', function(){
+
+    var uploaded_review_comment_image = (typeof Cookies.get("uploaded_review_comment_image") != "undefined") ? Cookies.get("uploaded_review_comment_image") : '';// get file field value using field id
+    //var uploaded_review_img  = (uploaded_review_img)? uploaded_review_img.split(","): [];
+
+    if (uploaded_review_comment_image) {
+      var ajax_data = {
+        action: "cancel_remove_comment_uploaded_img",
+        security: dom_review_list.security
+      };
+
+      $.ajax({
+        type: 'post',
+        url: ajaxURL,
+        data: ajax_data,
+        success: function (data_res) {
+          var result = JSON.parse(data_res);
+          Cookies.remove("uploaded_review_comment_image");
+        }
+      });
+    }
+
+  });
 
   /******************************* Show 1 comment **********************************/
   $(".comments-single-info").each(function(){

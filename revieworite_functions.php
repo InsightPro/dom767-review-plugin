@@ -1891,6 +1891,41 @@ function dom767_onload_comment_uploaded_img(){
 }
 /******************************************END*****************************************/
 
+/////////////////////////////////////////////////////////////////////////////////////////
+///////////////////// on reload remove comment uploaded img by ajax /////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// create hook for file uploading
+add_action('wp_ajax_nopriv_cancel_remove_comment_uploaded_img', 'dom767_cancel_comment_uploaded_img');
+add_action( 'wp_ajax_cancel_remove_comment_uploaded_img', 'dom767_cancel_comment_uploaded_img' );
+
+function dom767_cancel_comment_uploaded_img(){
+  ob_start();
+  
+  global $wpdb , $post;
+  $upload           = wp_upload_dir();// Upload directory
+  $upload_location  = $upload['basedir'] .'/dom767_review_uploads/';
+  $upload_url       = $upload['baseurl'] .'/dom767_review_uploads/';
+
+  $uploaded_image_name = isset( $_COOKIE['uploaded_review_comment_image'] ) ? $_COOKIE['uploaded_review_comment_image'] : '';
+  $uploaded_image_name  = explode(",",$uploaded_image_name);///string to array
+
+  foreach ($uploaded_image_name as $image_name) {
+    $file_to_delete = $upload_location.$image_name;
+    unlink($file_to_delete);
+  }
+
+
+  //$file_name_arr = json_encode($file_name_arr);
+
+  //wp_reset_query();
+  $output = array();
+  $output['data'] = ob_get_clean();
+  echo json_encode($output);
+  wp_die();
+
+}
+/******************************************END*****************************************/
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// remove review extra file by ajax ///////////////////////////
