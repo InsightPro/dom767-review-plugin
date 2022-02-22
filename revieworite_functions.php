@@ -1778,7 +1778,7 @@ function dom767_comment_upload_file_callback(){
       ?>
       <div class="review_uploaded_file_single">
         <div class="review_uploaded_file_overlay">
-          <span class="Comment_uploaded_file_delete_icon" data-path="<?php echo $files_path_arr[$key] ?>" data-image-name="<?php echo $file_name_arr[$key] ?>">
+          <span class="comment_uploaded_file_delete_icon" data-path="<?php echo $files_path_arr[$key] ?>" data-image-name="<?php echo $file_name_arr[$key] ?>">
             <img src="<?php echo DOM767_RIV_ASSETS_PUBLIC_DIR.'/image/llF5iyg.gif' ?>" alt="" style="display: none ; width: 30px; height: 30px" >
             <i class="fas fa-trash-alt"></i>
           </span>
@@ -1943,9 +1943,8 @@ function dom767_comment_extra_file_remove(){
   $path = isset( $_POST['path'] ) ? $_POST['path'] : '';
   $img_name = isset( $_POST['img_name'] ) ? $_POST['img_name'] : '';
   $new_name_arr = array();
-
   if (unlink($path)) {
-    $uploaded_review_image = isset( $_COOKIE['review_comment_extra_file_remove'] ) ? $_COOKIE['review_comment_extra_file_remove'] : '';
+    $uploaded_review_image = isset( $_COOKIE['uploaded_review_comment_image'] ) ? $_COOKIE['uploaded_review_comment_image'] : '';
     $name_array  = explode(",",$uploaded_review_image);///string to array
 
     foreach ($name_array as $value) {
@@ -1958,7 +1957,6 @@ function dom767_comment_extra_file_remove(){
   }
   //unlink($path);
   //$new_name_arr = json_encode($new_name_arr);
-  //var_dump($new_name_arr);
 
   $output = array();
   $output['data'] = ob_get_clean();

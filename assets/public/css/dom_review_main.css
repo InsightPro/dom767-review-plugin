@@ -302,10 +302,10 @@ span.uploaded_file_delete_icon svg {
 span.uploaded_file_delete_icon {
     cursor: pointer;
 }
-span.Comment_uploaded_file_delete_icon svg {
+span.comment_uploaded_file_delete_icon svg {
     padding-top: 40px;
 }
-span.Comment_uploaded_file_delete_icon {
+span.comment_uploaded_file_delete_icon {
     cursor: pointer;
 }
 .review_uploaded_file_single:hover .review_uploaded_file_overlay {
@@ -322,7 +322,7 @@ span.uploaded_file_delete_icon img {
     margin-top: 35px;
     margin-left: 35px;
 }
-span.Comment_uploaded_file_delete_icon img {
+span.comment_uploaded_file_delete_icon img {
     margin-top: 35px;
     margin-left: 35px;
 }

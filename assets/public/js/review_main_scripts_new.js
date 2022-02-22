@@ -632,9 +632,9 @@ jQuery(document).ready(function($){
 
   /**************************** comment uploaded extra file remove ***********************/
 
-  $(document).on('click', '.Comment_uploaded_file_delete_icon', function remove_review_extra_file(e){
+  $(document).on('click', '.comment_uploaded_file_delete_icon', function remove_review_extra_file(e){
     
-    $('.Comment_uploaded_file_delete_icon').prop('disabled', true);
+    $('.comment_uploaded_file_delete_icon').prop('disabled', true);
     $('#dom767_review_form_submit_btn').prop('disabled', true);
     $('#comment_form_submit_btn').prop('disabled', true);
     $(this).find('img').css("display", "block");
@@ -664,7 +664,7 @@ jQuery(document).ready(function($){
           expires: 1,
         });
 
-        $('.Comment_uploaded_file_delete_icon').prop('disabled', false);
+        $('.comment_uploaded_file_delete_icon').prop('disabled', false);
         $('.comment_form_submit_btn').prop('disabled', false);
         $('#dom767_review_form_submit_btn').prop('disabled', false);
 
