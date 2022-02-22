@@ -1049,27 +1049,27 @@ function get_review_form_wrap($post_id) {
                 <div class="review_form_rating_star_wrap"> 
                   <h4 class="rating-heading">Rate us</h4>
                   <fieldset class="dom767-rating"> 
-                    <input type="radio" id="star5" name="rating" value="5" />
+                    <input type="radio" id="star5" class="revRadioBtn" name="rating" value="5" />
                     <label class="full" for="star5" title="Awesome - 5 stars"></label> 
 
-                    <input type="radio" id="star4half" name="rating" value="4.5" />
+                    <input type="radio" id="star4half" class="revRadioBtn" name="rating" value="4.5" />
                     <label class="half" for="star4half" title="VERY GOOD - 4.5 stars"></label> 
 
-                    <input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4" title="VERY GOOD - 4 stars"></label> 
+                    <input type="radio" id="star4" class="revRadioBtn" name="rating" value="4" /><label class="full" for="star4" title="VERY GOOD - 4 stars"></label> 
 
-                    <input type="radio" id="star3half" name="rating" value="3.5" /><label class="half" for="star3half" title="OK - 3.5 stars"></label> 
+                    <input type="radio" id="star3half" class="revRadioBtn" name="rating" value="3.5" /><label class="half" for="star3half" title="OK - 3.5 stars"></label> 
 
-                    <input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3" title="OK - 3 stars"></label> 
+                    <input type="radio" id="star3" class="revRadioBtn" name="rating" value="3" /><label class="full" for="star3" title="OK - 3 stars"></label> 
 
-                    <input type="radio" id="star2half" name="rating" value="2.5" /><label class="half" for="star2half" title="BAD - 2.5 stars"></label> 
+                    <input type="radio" id="star2half" class="revRadioBtn" name="rating" value="2.5" /><label class="half" for="star2half" title="BAD - 2.5 stars"></label> 
 
-                    <input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2" title="BAD - 2 stars"></label> 
+                    <input type="radio" id="star2" class="revRadioBtn" name="rating" value="2" /><label class="full" for="star2" title="BAD - 2 stars"></label> 
 
-                    <input type="radio" id="star1half" name="rating" value="1.5" /><label class="half" for="star1half" title="BAD - 1.5 stars"></label> 
+                    <input type="radio" id="star1half" class="revRadioBtn" name="rating" value="1.5" /><label class="half" for="star1half" title="BAD - 1.5 stars"></label> 
 
-                    <input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1" title="VERY BAD - 1 star"></label> 
+                    <input type="radio" id="star1" class="revRadioBtn" name="rating" value="1" /><label class="full" for="star1" title="VERY BAD - 1 star"></label> 
 
-                    <input type="radio" id="starhalf" name="rating" value="0.5" /><label class="half" for="starhalf" title="VERY BAD - 0.5 stars"></label> 
+                    <input type="radio" id="starhalf" class="revRadioBtn" name="rating" value="0.5" /><label class="half" for="starhalf" title="VERY BAD - 0.5 stars"></label> 
                   </fieldset>
                   <div class="dom767_myratings_wraps" style="display: none">
                     <h4 class="rating-heading">Your Rating Value is : </h4>

@@ -64,12 +64,12 @@ jQuery(document).ready(function($){
     });
   }
   /************************************************************************************/
+
   /************ clicked on comment form close btn remove uploaded image **************/
-  //$('.comment_form_close_btn, .dom767_review_reply_button').on('click', function(e){
-  $(document).on('click touchend', '.comment_form_close_btn, .dom767_review_reply_button', function(){
+
+  $(document).on('click touchend', '.comment_form_close_btn, .dom767_review_reply_button, .dom767_review_edit_button, #review_old_to_new, #filterForHighRating, #filterForLowRating', function(){
 
     var uploaded_review_comment_image = (typeof Cookies.get("uploaded_review_comment_image") != "undefined") ? Cookies.get("uploaded_review_comment_image") : '';// get file field value using field id
-    //var uploaded_review_img  = (uploaded_review_img)? uploaded_review_img.split(","): [];
 
     if (uploaded_review_comment_image) {
       var ajax_data = {
@@ -92,7 +92,6 @@ jQuery(document).ready(function($){
 
   /******************************* Show 1 comment **********************************/
   $(".comments-single-info").each(function(){
-    //$(".comments-single-info:first-child").show();
     $(".comments-single-info:first-child").css('display', 'inline-flex');
   });
 
@@ -100,28 +99,27 @@ jQuery(document).ready(function($){
   $(document).on('click', '.view_all_comments_btn', function(e){
     var sib = $(this).next('.dom767_review_reply_main_wrap').find(".comments-single-info");
     $(sib).css('display', 'inline-flex');
-    $(this).hide();
+    $(this).hide();///hide view all button
   });
 
   /*************************** Show all comment reply *********************************/
   $(document).on('click', '.view_all_comment_reply_btn', function(e){
     var sib = $(this).next('.dom767_comment_reply_main_wrap').find(".reply-single-info");
     $(sib).css('display', 'inline-flex');
-    $(this).hide();
+    $(this).hide();///hide view all button
   });
 
 
   /*********************************** Rating Star ************************************/
-  $("input[type='radio']").click(function(){
+  $("input[type='radio'].revRadioBtn").click(function(){
     $('.dom767_myratings_wraps').fadeIn();
-    var sim = $("input[type='radio']:checked").val();
-    //alert(sim);
+    var sim = $("input[type='radio'].revRadioBtn:checked").val();
     if (sim<3) { 
       $('.dom767_myratings').css('color','red'); 
       $(".dom767_myratings").text(sim); 
     }else{ 
       $('.dom767_myratings').css('color','green'); 
-      $(".dom767_myratings").text(sim); 
+      $(".dom767_myratings").text(sim);
     } 
   });
 
@@ -132,6 +130,7 @@ jQuery(document).ready(function($){
   /******************************* comment form close ********************************/
   $(document).on('click', '#comment_form_close_btn', function close_review_reply_form(e){
     $('.review-comment-form-wrap').remove();
+    $('.dom767_review_reply_button').fadeIn();
     e.preventDefault();
   });  
 
@@ -144,6 +143,7 @@ jQuery(document).ready(function($){
   /******************************* edit form close ********************************/
   $(document).on('click', '#edit_form_close_btn', function close_review_reply_form(e){
     $('.review-edit-form-wrap').remove();
+    $('.dom767_review_edit_button').fadeIn();
     e.preventDefault();
   });
 
@@ -152,9 +152,8 @@ jQuery(document).ready(function($){
   /******************************** comment form open ******************************/
 
   $(document).on('click', '.dom767_review_reply_button', function poen_review_comment_form(e){
-    //console.log(page_no);
-    //$(this).find('span').attr('data-id');
-    //$('.review-reply-form-wrap').remove();
+
+    $(this).fadeOut();
     $('.review-comment-form-wrap').remove();
     $('.review-edit-form-wrap').remove();
     var review_post_id = $(this).attr('data-post_id');
@@ -167,7 +166,7 @@ jQuery(document).ready(function($){
 
     var media_farm = '<div class="dom767_comment_media_upload_wrap"><form id="dom767_comment_image_formId" class="dom767_comment_image_formId" method="post" enctype="multipart/form-data" autocomplete="off" ><input type="file" name="file[]" id="dom767_comments_file" multiple /><h2 class="drag_and_drop_text">Drag your images here or click in this area.</h2><input name="security" value="'+upload_form_nonce+'" type="hidden"><input name="action" value="comment_upload_file_callback" type="hidden"/><input name="submit" value="upload" type="submit" id="dom767-submit-comment-img" style="display: none" /><h4>Image Type png, jpeg, jpg only</h4></form><div class="dom767_show_coment_uploaded_img"></div><div class="comment_media_upload_loading_img"><img src="'+public_assets_dri+'/image/llF5iyg.gif" alt="" style=" " ><p>Media is Uploading...</p></div><div class="commetFormSubmitAndCloseBtn"><button type="button" class="btn comment_form_submit_btn" id="comment_form_submit_btn">Submit</button><button type="button" class="btn comment_form_close_btn" id="comment_form_close_btn">close</button></div></div>';
 
-    var htmlform = '<div class="review-comment-form-wrap"><h4>Leave a comment</h4><form id="dom767_review_reply_form" action="" method="post" class="dom767_review_reply_form"><div class="comment-form-element"><input type="hidden" name="review_post_id" id="reply_post_id" value="'+review_post_id+'" ><input type="hidden" name="review_parent_id" id="review_parent_id" value="'+review_parent_id+'" ><input type="hidden" name="review_karma" id="review_karma" value="'+karma+'" ><label class="hide" for="review">Message</label><textarea id="review_text_area" class="review-input-fields" placeholder="Write your reply" name="review" cols="40" rows="10"></textarea></div><input name="submit" class="comment-form-submit"  type="submit" id="dom767-comment-submit" value="submit" style="display: none;"></form><div class="comment-form-bottom-element"><button type="button" class="btn comment_media_form_show_btn" id="comment_media_form_show_btn"><i class="fas fa-image"></i></button>'+media_farm+'</div></div>';
+    var htmlform = '<div class="review-comment-form-wrap"><h4>Leave a comment <button type="button" class="btn comment_media_form_show_btn" id="comment_media_form_show_btn"><i class="fas fa-image"></i></button></h4><form id="dom767_review_reply_form" action="" method="post" class="dom767_review_reply_form"><div class="comment-form-element"><input type="hidden" name="review_post_id" id="reply_post_id" value="'+review_post_id+'" ><input type="hidden" name="review_parent_id" id="review_parent_id" value="'+review_parent_id+'" ><input type="hidden" name="review_karma" id="review_karma" value="'+karma+'" ><label class="hide" for="review">Message</label><textarea id="review_text_area" class="review-input-fields" placeholder="Write your Comment" name="review" cols="40" rows="10"></textarea></div><input name="submit" class="comment-form-submit"  type="submit" id="dom767-comment-submit" value="submit" style="display: none;"></form><div class="comment-form-bottom-element">'+media_farm+'</div></div>';
 
     //$(that_parent).after(htmlform);
     if (user_id != '0') {
@@ -184,7 +183,6 @@ jQuery(document).ready(function($){
 
   /******************************** Reply form open ******************************/
   $(document).on('click', '#dom767_review_reply_button-off', function poen_review_reply_form(e){
-    //console.log(page_no);
     //$(this).find('span').attr('data-id');
     $('.review-reply-form-wrap').remove();
     $('.review-edit-form-wrap').remove();
@@ -215,7 +213,7 @@ jQuery(document).ready(function($){
 
   $(document).on('click', '#dom767_review_edit_button', function poen_review_edit_form(e){
 
-    //$(this).find('span').attr('data-id');
+    $(this).fadeOut();
     $('.review-reply-form-wrap').remove();
     $('.review-edit-form-wrap').remove();
     var review_post_id = $(this).attr('data-post_id');
@@ -224,7 +222,6 @@ jQuery(document).ready(function($){
     var that = $(this);
     var that_parent = $(this).parent();
     var content = $(that_parent).parent().siblings('.review-content-div').find('p').text();
-    console.log(content);
 
     var htmlform = '<div class="review-edit-form-wrap"><h4>Edit comment</h4><form id="dom767_review_edit_form" action="" method="post" class="dom767_review_edit_form"><div class="edit-form-element"><input type="hidden" name="review_post_id" id="edit_post_id" value="'+review_post_id+'" ><input type="hidden" name="edit_review_id" id="edit_review_id" value="'+edit_review_id+'" ><label class="hide" for="review">Message</label><textarea id="review_text_area" class="review-input-fields" placeholder="Write your edit" name="review" cols="40" rows="10">'+content+'</textarea></div><input name="submit" class="form-submit-button"  type="submit" id="dom767-edit-review-submit" value="submit"><button type="button" class="btn edit_form_close_btn" id="edit_form_close_btn">close</button></form></div>';
 
@@ -325,7 +322,7 @@ jQuery(document).ready(function($){
     });
 
     if(dataObj['review'] != ''){///if textarea and rating is not empty
-      $(this).find('#dom767-reply-submit').val("Submitting...");
+      $('.comment_form_submit_btn').text("Submitting...");
       var ajax_data = {
         action: "dom767_reply_form_submit",
         security: dom_review_list.security,
@@ -341,7 +338,7 @@ jQuery(document).ready(function($){
         success: function (data_res) {
           var result = JSON.parse(data_res);
           $('#review_list_wrap_main').html(result.data);
-          $(this).find('#dom767-reply-submit').val("Submit");
+          //$('.comment_form_submit_btn').taxt("Submit");
           Cookies.remove("uploaded_review_comment_image");
           $(".comments-single-info").each(function(){
             $(".comments-single-info:first-child").css('display', 'inline-flex');
@@ -434,7 +431,6 @@ jQuery(document).ready(function($){
 
           var new_this_total = this_total - 1; /// total vote new
           $(this).find('bdi').text(new_this_total);
-          //console.log(new_this_total);
           database = 'delete';
 
         }else{ /// if previous vote and new vote is not same
@@ -569,7 +565,6 @@ jQuery(document).ready(function($){
     var fileInputElement  = document.getElementById("dom767_comments_file");
     var file_length       = fileInputElement.files;
     var file_length       = file_length.length;
-    console.log(file_length);
 
     if(file_length > 0){
       $('.comment_media_upload_loading_img').fadeIn();
@@ -766,7 +761,6 @@ jQuery(document).ready(function($){
     var post_id       = $(this).attr('data-post-id');
     var post_id       = parseInt(post_id);
     var that          = $(this);
-    console.log(post_id);
 
     var ajax_data = {
       action: "review_filter",
