@@ -82,7 +82,10 @@ class DOM767_Review {
         wp_localize_script('dom767-review-main-assets', 'dom_review_list', array(
             'ajax_url'=> admin_url('admin-ajax.php'), 
             'security'=> wp_create_nonce('ajax_nonce'),
-            'current_user_id'=> $cur_user_id )
+            'current_user_id'=> $cur_user_id,
+            'public_assets_dri'=> DOM767_RIV_ASSETS_PUBLIC_DIR,
+            'upload_form_nonce'=> wp_create_nonce("uploadingFile")
+            )
         );
 
     }
