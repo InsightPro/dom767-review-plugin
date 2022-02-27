@@ -439,20 +439,21 @@ span.comment_uploaded_file_delete_icon img {
     font-size: 20px;
 
 }
+
 .comment_media_upload_loading_img {
     width: 100% !important;
     display: none;
 }
 .comment_media_upload_loading_img img{
-    width: 50px; 
-    height: 50px;
+    width: 40px; 
+    height: 40px;
     text-align: center;
-    margin-left: 40%;
+    margin-left: 45%;
 }
 
 .comment_media_upload_loading_img p{
-    margin-left: 34% !important;
-    font-size: 20px;
+    margin-left: 36% !important;
+    font-size: 17px;
 
 }
 

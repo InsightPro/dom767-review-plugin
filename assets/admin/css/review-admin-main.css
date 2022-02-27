@@ -1,0 +1,71 @@
+.post_review_count_admin_table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.post_review_count_admin_table td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.review_admin_paginations{
+	border:1px solid #ddd;
+	padding: 5px;
+	font-size: 12px;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.review_admin_paginations_pre{
+	border:1px solid #ddd;
+	padding: 5px;
+	font-size: 12px;
+	margin: 5px;
+	cursor: pointer
+}
+.review_admin_paginations_next{
+	border:1px solid #ddd;
+	padding: 5px;
+	font-size: 12px;
+	margin: 5px;
+	cursor: pointer
+}
+
+.admin_review_loadmore_loading_div {
+    position: absolute;
+    top: 39.5%;
+    background: #00000057;
+    height: 700px;
+    width: 100%;
+}
+
+.admin_review_loadmore_loading_img {
+    position: absolute;
+    top: 48%;
+    right: 50%;
+}
+
+.active_btn{
+	background-color: #ddd;
+}
+
+ul.review_admin_paginations_ul {
+    display: inline-flex;
+}
+.review-btn-dange{
+	color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545 !important;
+}
+.review-btn-dange:hover {
+    color: #fff !important;
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+

@@ -817,10 +817,10 @@ function review_list_template($post_id, $page_no){
             This Post has a Total <?php echo $total_item ?> <?php echo ($total_item > 1)? 'Reviews': 'Review'; ?>
           </h4>
           <ul class="review_filter_icon_ul">
-            <h4 class="review_filter_options_list_text" >You Can Filter</h4>
+            <h4 class="review_filter_options_list_text" >You Can Filter By</h4>
             <li class="review_filter_options_list">
                 <input type="checkbox" class="review_filter_checkbox" id="review_old_to_new" name="review_old_to_new" value="oldest" data-post-id="<?php echo $post_id ?>" >
-                <label for="review_old_to_new"><i class="fa-solid fa-clock-rotate-left"></i> Old To New</label>
+                <label for="review_old_to_new"><i class="fa-solid fa-clock-rotate-left"></i> Oldest Review</label>
             </li>
 
             <li class="review_filter_options_list">
