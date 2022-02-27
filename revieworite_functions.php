@@ -602,6 +602,8 @@ function get_review_comments($post_id, $parent_ID){
   $upload_url       = $upload['baseurl'] .'/dom767_review_uploads/';
   $current_user_id  = get_current_user_id();
   $post_id          = ($post_id != '')? $post_id : get_the_ID();
+  $is_comment_edit  = get_option('dom767_review_seting_option_comment-edit');
+  $is_comment_media = get_option('dom767_review_seting_option_comment-media');
   $reply_query      = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
 
   foreach ($reply_query as $query_data) {
@@ -687,10 +689,19 @@ function get_review_comments($post_id, $parent_ID){
             <p class="review-content-text"><?php echo $review_content ?></p>
           </div>
         </div>
-        <?php if ($media_query): ?>
-          <?php foreach ($media_name_array as $media_name): ?>
-            <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
-          <?php endforeach ?>
+        <?php if ($is_comment_media == 1): ?>
+          <?php if ($media_query): ?>
+            <?php foreach ($media_name_array as $media_name): ?>
+              <div class="review_list_media_single">
+                <div class="review_list_file_overlay">
+                <a href="<?php echo $upload_url.$media_name ?>" class="dom767_review_list_image item__overlay" target="blank">
+                </a>
+                  <i class="fa-solid fa-eye"></i>
+                </div>
+                <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
+              </div>
+            <?php endforeach ?>
+          <?php endif ?>
         <?php endif ?>
         <ul class="list-inline d-sm-flex my-0">
           <li class="list-inline-item g-mr-20">
@@ -711,7 +722,7 @@ function get_review_comments($post_id, $parent_ID){
               Reply
             </span>
           </li> -->
-          <?php if ($user_id == $current_user_id  ): ?>
+          <?php if ($user_id == $current_user_id && $is_comment_edit == 1 ): ?>
           <li class="list-inline-item ml-auto">
             <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
               <i class="fa fa-edit"></i>
@@ -791,7 +802,8 @@ function review_list_template($post_id, $page_no){
   $upload_dir       = wp_upload_dir();// Upload directory
   $upload_location  = $upload_dir['basedir'] .'/dom767_review_uploads/';
   $upload_url       = $upload_dir['baseurl'] .'/dom767_review_uploads/';
-
+  $is_review_edit   = get_option('dom767_review_seting_option_review-edit');
+  $is_review_media = get_option('dom767_review_seting_option_review-media');
   //$review_query0 = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0 ORDER BY review_ID DESC');
 
   $review_query = get_review($post_id);
@@ -801,7 +813,12 @@ function review_list_template($post_id, $page_no){
     $limits          = $limit * $page_no;
     $total_item     = count($review_query);
     $total_pages    = ceil($total_item/$limit);
-    $review_query   = array_slice( $review_query, 0, $limits ); 
+    $review_query   = array_slice( $review_query, 0, $limits );
+
+    $is_filter_oldest   = get_option('dom767_review_seting_option_review-filter-oldest');
+    $is_filter_high_rating   = get_option('dom767_review_seting_option_review-filter-high-rating');
+    $is_filter_low_rating   = get_option('dom767_review_seting_option_review-filter-low-rating');
+
     ?>
     <div class="review_list_wrap">
       <div class="row">
@@ -817,21 +834,27 @@ function review_list_template($post_id, $page_no){
             This Post has a Total <?php echo $total_item ?> <?php echo ($total_item > 1)? 'Reviews': 'Review'; ?>
           </h4>
           <ul class="review_filter_icon_ul">
+            <?php if ($is_filter_oldest == 1 || $is_filter_high_rating== 1 || $is_filter_low_rating == 1): ?>
             <h4 class="review_filter_options_list_text" >You Can Filter By</h4>
+            <?php endif ?>
+            <?php if ($is_filter_oldest == 1): ?>
             <li class="review_filter_options_list">
                 <input type="checkbox" class="review_filter_checkbox" id="review_old_to_new" name="review_old_to_new" value="oldest" data-post-id="<?php echo $post_id ?>" >
                 <label for="review_old_to_new"><i class="fa-solid fa-clock-rotate-left"></i> Oldest Review</label>
             </li>
-
+            <?php endif ?>
+            <?php if ($is_filter_high_rating== 1): ?>
             <li class="review_filter_options_list">
                 <input type="checkbox" class="review_filter_checkbox" id="filterForHighRating" name="filterForHighRating" value="high_rating" data-post-id="<?php echo $post_id ?>" >
                 <label for="filterForHighRating"><i class="fas fa-sort-amount-up"></i> High Rating</label>
             </li>
-
+            <?php endif ?>
+            <?php if ($is_filter_low_rating == 1): ?>
             <li class="review_filter_options_list">
                 <input type="checkbox" class="review_filter_checkbox" id="filterForLowRating" name="filterForLowRating" value="low_rating" data-post-id="<?php echo $post_id ?>" >
                 <label for="filterForLowRating"><i class="fas fa-sort-amount-down-alt"></i> Low Rating</label>
             </li>
+            <?php endif ?>
           </ul>
           <div class="review_list_card">
               <div class="review_list_loader">
@@ -921,10 +944,19 @@ function review_list_template($post_id, $page_no){
                         <p class="review-content-text"><?php echo $review_content ?></p>
                       </div>
                     </div>
-                    <?php if ($media_query): ?>
-                      <?php foreach ($media_name_array as $media_name): ?>
-                        <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
-                      <?php endforeach ?>
+                    <?php if ($is_review_media == 1): ?>
+                      <?php if ($media_query): ?>
+                        <?php foreach ($media_name_array as $media_name): ?>
+                          <div class="review_list_media_single">
+                            <div class="review_list_file_overlay">
+                            <a href="<?php echo $upload_url.$media_name ?>" class="dom767_review_list_image item__overlay" target="blank">
+                            </a>
+                              <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
+                          </div>
+                        <?php endforeach ?>
+                      <?php endif ?>
                     <?php endif ?>
                     <ul class="list-inline d-sm-flex my-0">
                       <li class="list-inline-item g-mr-20">
@@ -947,7 +979,7 @@ function review_list_template($post_id, $page_no){
                         </span>
                       </li>
                       <?php endif ?>
-                      <?php if ($user_id == $current_user_id): ?>
+                      <?php if ($user_id == $current_user_id && $is_review_edit == 1): ?>
                       <li class="list-inline-item ml-auto">
                         <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                           <i class="fa fa-edit"></i>
@@ -1006,6 +1038,7 @@ function get_review_form_wrap($post_id) {
   $total_review     = dom767_post_total_review($post_id);
   $did_user_review  = dom767_did_user_review($post_id);
   $page_no = 1;
+  $is_review_media   = get_option('dom767_review_seting_option_review-media');
 	?>
   <div class="review-form-and-list-wrap" >
   	<div class="review-form-wrap">
@@ -1076,16 +1109,20 @@ function get_review_form_wrap($post_id) {
                     <span class="dom767_myratings">00</span>
                   </div>
 
+                  <?php if ($is_review_media == 1): ?>
                   <div class="media_form_show_hide_btn">
                      <i class="fas fa-image"></i>
                   </div>
+                  <?php endif ?>
                 </div>
 
               </div>
               <input name="submit" class="form-submit-button"  type="submit" id="dom767-submit-review" value="submit" style="display: none">
             </form>
           </div>
+          <?php if ($is_review_media == 1): ?>
           <?php echo dom767_review_media_form() ?>
+          <?php endif ?>
           <div class="dom767_review_form_submit_btn_wrap">
             <button type="button" class="btn btn-success" id="dom767_review_form_submit_btn">Leave Your Review</button>
           </div>
@@ -1573,53 +1610,74 @@ function dom767_review_upload_file_callback(){
     $ex_uploaded_arr  = explode(",",$ex_uploaded);///string to array
     end($ex_uploaded_arr);
     $last_key       = key($ex_uploaded_arr); 
-    //echo "last key = ". $last_key;
+    $ex_img_count = count($ex_uploaded_arr);
   }
 
 
-  // Loop all files
-  $i = 1;
-  for($index = 0;$index < $countfiles;$index++){
-
-    if(isset($_FILES["file"]["name"][$index]) && $_FILES["file"]["name"][$index] != ''){
-        
-      $filename = $_FILES["file"]["name"][$index];// File name
-      $roa_name = $filename;// File name
-      $filename = preg_replace('/\s+/', '-', $filename);
-      $filename = preg_replace('/[^A-Za-z0-9.\-]/', '', $filename);
-
-
-      $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));// Get extension
-      $valid_ext = array("png","jpeg","jpg");// Valid image extension
-
-      $start = ($ex_uploaded)? $last_key + $i : $index;
-      $temp = explode(".", $_FILES["file"]["name"][$index]);
-      $filename = $lastid.'_'.$start. '.' . end($temp);
-      $extension = 'false';
-
-      //var_dump($filename);
-
-      if(in_array($ext, $valid_ext)){// Check extension
-        $extension = 'true';
-        $path = $upload_location.$filename;// File path
-        $url = $upload_url.$filename;
+  if ($ex_img_count < 6) {
+    // Loop all files
+    $i = 1;
+    for($index = 0;$index < $countfiles;$index++){
+      $upload_sum = $ex_img_count + $index ;
+      if ($upload_sum < 6) {
+        if(isset($_FILES["file"]["name"][$index]) && $_FILES["file"]["name"][$index] != ''){
+            
+          $filename = $_FILES["file"]["name"][$index];// File name
+          $roa_name = $filename;// File name
+          $filename = preg_replace('/\s+/', '-', $filename);
+          $filename = preg_replace('/[^A-Za-z0-9.\-]/', '', $filename);
 
 
-         // Upload file
-        if(move_uploaded_file($_FILES["file"]["tmp_name"][$index],$path)){
-          $files_path_arr[] = $path;
-          $files_path_url[] = $url;
-          $file_name_arr[]  = $filename;
+          $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));// Get extension
+          $valid_ext = array("png","jpeg","jpg");// Valid image extension
+
+          $start = ($ex_uploaded)? $last_key + $i : $index;
+          $temp = explode(".", $_FILES["file"]["name"][$index]);
+          $filename = $lastid.'_'.$start. '.' . end($temp);
+          $extension = 'false';
+
+          //var_dump($filename);
+
+          if(in_array($ext, $valid_ext)){// Check extension
+            $extension = 'true';
+            $path = $upload_location.$filename;// File path
+            $url = $upload_url.$filename;
+
+             // Upload file
+            if(move_uploaded_file($_FILES["file"]["tmp_name"][$index],$path)){
+              $files_path_arr[] = $path;
+              $files_path_url[] = $url;
+              $file_name_arr[]  = $filename;
+            }
+          }else{
+            $extension = 'false';
+          }///end if extension wrong
+
+          $extension_arr[] = $extension;
+          $all_file_name[] = $roa_name;
         }
       }else{
-        $extension = 'false';
-      }///end if extension wrong
-
-      $extension_arr[] = $extension;
-      $all_file_name[] = $roa_name;
-    }
-    $i ++;
-  }///end for loop
+        ?>
+        <div class="dom767-file-exte-alert-danger" role="alert">
+          <span class="file-exte-alert-danger-text">
+            <strong><?php echo $_FILES["file"]["name"][$index] ?> </strong> file was not uploaded, because we don't accept <strong> More Than 6 </strong> Image.
+          </span>
+          <i class="far fa-times-circle review_alert_close"></i>
+        </div>
+        <?php
+      }
+      $i ++;
+    }///end for loop
+  }else{
+    ?>
+    <div class="dom767-file-exte-alert-danger" role="alert">
+      <span class="file-exte-alert-danger-text">
+        <strong>You can't upload more than 6 image </strong> 
+      </span>
+      <i class="far fa-times-circle review_alert_close"></i>
+    </div>
+    <?php
+  }///end if 
 
 
   if ($ex_uploaded_arr) {
@@ -1657,7 +1715,7 @@ function dom767_review_upload_file_callback(){
   foreach ($all_file_name as $key => $value) {
     if ($extension_arr[$key] == 'false') {
       $exten = strtolower(pathinfo($value, PATHINFO_EXTENSION));// Get extension
-      $atart_text = $value. " file was not uploaded, because we don't accept '.".$exten . "' file";
+      //$atart_text = $value. " file was not uploaded, because we don't accept '.".$exten . "' file";
       ?>
       <div class="dom767-file-exte-alert-danger" role="alert">
         <span class="file-exte-alert-danger-text">
@@ -1711,53 +1769,76 @@ function dom767_comment_upload_file_callback(){
     $ex_img_arr  = explode(",",$ex_uploaded);///string to array
     $ex_uploaded_arr  = explode(",",$ex_uploaded);///string to array
     end($ex_uploaded_arr);
-    $last_key       = key($ex_uploaded_arr); 
+    $last_key       = key($ex_uploaded_arr);
+    $ex_img_count = count($ex_uploaded_arr); 
     //echo "last key = ". $last_key;
   }
 
   // Loop all files
-  $i = 1;
-  for($index = 0;$index < $countfiles;$index++){
-
-    if(isset($_FILES["file"]["name"][$index]) && $_FILES["file"]["name"][$index] != ''){
-        
-      $filename = $_FILES["file"]["name"][$index];// File name
-      $roa_name = $filename;// File name
-      $filename = preg_replace('/\s+/', '-', $filename);
-      $filename = preg_replace('/[^A-Za-z0-9.\-]/', '', $filename);
-
-
-      $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));// Get extension
-      $valid_ext = array("png","jpeg","jpg");// Valid image extension
-
-      $start = ($ex_uploaded)? $last_key + $i : $index;
-      $temp = explode(".", $_FILES["file"]["name"][$index]);
-      $filename = $lastid.'_'.$start. '.' . end($temp);
-      $extension = 'false';
-
-      //var_dump($filename);
-
-      if(in_array($ext, $valid_ext)){// Check extension
-        $extension = 'true';
-        $path = $upload_location.$filename;// File path
-        $url = $upload_url.$filename;
+  if ($ex_img_count < 6) {
+    $i = 1;
+    for($index = 0;$index < $countfiles;$index++){
+      $upload_sum = $ex_img_count + $index ;
+      if ($upload_sum < 6) {
+        if(isset($_FILES["file"]["name"][$index]) && $_FILES["file"]["name"][$index] != ''){
+            
+          $filename = $_FILES["file"]["name"][$index];// File name
+          $roa_name = $filename;// File name
+          $filename = preg_replace('/\s+/', '-', $filename);
+          $filename = preg_replace('/[^A-Za-z0-9.\-]/', '', $filename);
 
 
-         // Upload file
-        if(move_uploaded_file($_FILES["file"]["tmp_name"][$index],$path)){
-          $files_path_arr[] = $path;
-          $files_path_url[] = $url;
-          $file_name_arr[]  = $filename;
+          $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));// Get extension
+          $valid_ext = array("png","jpeg","jpg");// Valid image extension
+
+          $start = ($ex_uploaded)? $last_key + $i : $index;
+          $temp = explode(".", $_FILES["file"]["name"][$index]);
+          $filename = $lastid.'_'.$start. '.' . end($temp);
+          $extension = 'false';
+
+          //var_dump($filename);
+
+          if(in_array($ext, $valid_ext)){// Check extension
+            $extension = 'true';
+            $path = $upload_location.$filename;// File path
+            $url = $upload_url.$filename;
+
+
+             // Upload file
+            if(move_uploaded_file($_FILES["file"]["tmp_name"][$index],$path)){
+              $files_path_arr[] = $path;
+              $files_path_url[] = $url;
+              $file_name_arr[]  = $filename;
+            }
+          }else{
+            $extension = 'false';
+          }///end if extension wrong
+
+          $extension_arr[] = $extension;
+          $all_file_name[] = $roa_name;
         }
       }else{
-        $extension = 'false';
-      }///end if extension wrong
-
-      $extension_arr[] = $extension;
-      $all_file_name[] = $roa_name;
-    }
-    $i ++;
-  }///end for loop
+        ?>
+        <div class="dom767-file-exte-alert-danger" role="alert">
+          <span class="file-exte-alert-danger-text">
+            <strong><?php echo $_FILES["file"]["name"][$index] ?> </strong> file was not uploaded, because we don't accept <strong> More Than 6 </strong> Image.
+          </span>
+          <i class="far fa-times-circle review_alert_close"></i>
+        </div>
+        <?php
+      }
+      $i ++;
+    }///end for loop
+  }else{
+    ?>
+    <div class="dom767-file-exte-alert-danger" role="alert">
+      <span class="file-exte-alert-danger-text">
+        <strong>You can't upload more than 6 image </strong> 
+      </span>
+      <i class="far fa-times-circle review_alert_close"></i>
+    </div>
+    <?php
+  }///end if
 
 
   if ($ex_uploaded_arr) {

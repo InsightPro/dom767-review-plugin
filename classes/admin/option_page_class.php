@@ -6,7 +6,7 @@ class Dom767_review_Option_Page{
     add_action('admin_menu',array($this,'dom767_review_create_admin_manu'));///review menu
     add_action('admin_menu',array($this,'dom767_review_create_admin_submenu'));//review sub menu
 
-    add_action('admin_post_dom767_review_admin_page',array($this,'dom767_review_showPostType_form_save'));///admin_post_(action name)
+    add_action('admin_post_dom767ReviewAdminSettingPage',array($this,'dom767_review_setting_form_save'));///admin_post_(action name)
 
   }
 
@@ -41,15 +41,15 @@ class Dom767_review_Option_Page{
 
 
 
-  public function dom767_review_showPostType_form_save(){
+  public function dom767_review_setting_form_save(){
     //print_r($_POST);
     //die();
     check_admin_referer("dom767_review");
 
-    $posttypes = array('post','w2dc_listing', 'jobs', 'ajde_events', 'dompedia', 'announcement', 'knowledge_base');
-    foreach ($posttypes as $posttype) {
-      if (isset($_POST['show_review_on_cpt_'.$posttype])) {
-        update_option('show_review_on_cpt_'.$posttype, sanitize_text_field($_POST['show_review_on_cpt_'.$posttype]));
+    $settingTypes = array('review-media','comment-media', 'review-edit', 'comment-edit', 'review-filter-oldest', 'review-filter-high-rating', 'review-filter-low-rating');
+    foreach ($settingTypes as $settingType) {
+      if (isset($_POST['dom767_review_seting_option_'.$settingType])) {
+        update_option('dom767_review_seting_option_'.$settingType, sanitize_text_field($_POST['dom767_review_seting_option_'.$settingType]));
       }
     }
     wp_redirect('admin.php?page=dom767_review_setting_page');

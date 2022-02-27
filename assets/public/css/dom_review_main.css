@@ -132,6 +132,15 @@
 .reviewer-single-info-data {
     margin-left: 10px;
 }
+.review_list_file_overlay svg {
+    margin-top: 41px;
+}
+.review_list_media_single{
+   display: inline-block;
+   position: relative;
+   width: 100px;
+    height: 100px;
+}
 .display-inline-block{
     display: inline-block;
     display: -webkit-box;
@@ -326,6 +335,19 @@ button#dom767_review_form_submit_btn {
     display: none;
 }
 
+.review_list_file_overlay {
+    display: block;
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background-color: #0000008c;
+    display: none;
+}
+
 span.uploaded_file_delete_icon svg {
     padding-top: 40px;
 }
@@ -339,6 +361,9 @@ span.comment_uploaded_file_delete_icon {
     cursor: pointer;
 }
 .review_uploaded_file_single:hover .review_uploaded_file_overlay {
+    display: block;
+}
+.review_list_media_single:hover .review_list_file_overlay {
     display: block;
 }
 

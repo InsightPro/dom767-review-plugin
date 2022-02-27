@@ -1,23 +1,20 @@
 
-<h1>Select Post Types to show review form</h1>
+<h1>Review Setting Options Page</h1>
 <form method="post" action=" <?php echo admin_url('admin-post.php') ?>">
 	<?php
 		wp_nonce_field("dom767_review");
 
-		//$posttypes = get_post_types();
-		$posttypes = array('post','w2dc_listing', 'jobs', 'ajde_events', 'dompedia', 'announcement', 'knowledge_base');
-		//var_dump(get_post_types());
-		foreach ($posttypes as $posttype) {
-		$obj = get_post_type_object( $posttype );
-		$postTypeName = $obj->labels->singular_name;
-		$show_review_on_cpt = get_option('show_review_on_cpt_'.$posttype);
-		?>
+		$settingTypes = array('review-media','comment-media', 'review-edit', 'comment-edit', 'review-filter-oldest', 'review-filter-high-rating', 'review-filter-low-rating');
+		foreach ($settingTypes as $settingType) {
 
-		<div id="show_review_on_cpt_post-item" class="option-item ">
-			<span class="tie-label"><?php echo$postTypeName ?></span>
-			<input type="hidden" name="show_review_on_cpt_<?php echo $posttype ?>" value="0">
-			<input id="show_review_on_cpt_<?php echo $posttype ?>" class="tie-js-switch" name="show_review_on_cpt_<?php echo $posttype ?>" type="checkbox" value="1" <?php  echo ($show_review_on_cpt == '1')? 'checked':'' ?> style="display: none" />
-		</div>
+			$get_review_setting_options = get_option('dom767_review_seting_option_'.$settingType);
+			?>
+
+			<div id="dom767_review_seting_option_item" class="option-item ">
+				<span class="tie-label"><?php echo $settingType ?></span>
+				<input type="hidden" name="dom767_review_seting_option_<?php echo $settingType ?>" value="0">
+				<input id="dom767_review_seting_option_<?php echo $settingType ?>" class="tie-js-switch" name="dom767_review_seting_option_<?php echo $settingType ?>" type="checkbox" value="1" <?php  echo ($get_review_setting_options == '1')? 'checked':'' ?> style="display: none" />
+			</div>
 
 		
 		<?php
@@ -25,7 +22,7 @@
 
 	?>
 
-	<input type="hidden" name="action" value="dom767_review_admin_page">
+	<input type="hidden" name="action" value="dom767ReviewAdminSettingPage">
 	<?php 
 		submit_button('Save') ;
 	?>

@@ -51,14 +51,20 @@ class DOM767_Review {
 
     ////////// load assate for admin panel //////////
     function load_dom767_review_admin_assets( $screen ) {
-        if ( isset($_GET['page']) && $_GET['page'] == 'dom767_review_setting_page_view_all' ) {
+        global $wpdb, $current_user;
+        $cur_user_id = get_current_user_id();
+        $is_comment_media   = get_option('dom767_review_seting_option_comment-media');
 
+        if ( isset($_GET['page']) && $_GET['page'] == 'dom767_review_setting_page_view_all' ) {
             //wp_register_script('dom_review_jquery-3.5.1.js', 'https://code.jquery.com/jquery-3.5.1.js');
             //wp_enqueue_script('dom_review_jquery-3.5.1.js'); 
 
             wp_enqueue_script( 'dom_review_admin_main-js', DOM767_RIV_ASSETS_ADMIN_DIR . "/js/dom_review_admin_main.js", array( 'jquery' ), $this->version, true );
 
-            wp_localize_script('dom_review_admin_main-js', 'dom_admin_review_list', array('ajax_url'=> admin_url('admin-ajax.php'), 'security'=> wp_create_nonce('ajax_nonce')));
+            wp_localize_script('dom_review_admin_main-js', 'dom_admin_review_list', array(
+                'ajax_url'=> admin_url('admin-ajax.php'), 
+                'security'=> wp_create_nonce('ajax_nonce')
+            ));
 
             wp_enqueue_style( 'dom767-review-admin-main-css', DOM767_RIV_ASSETS_ADMIN_DIR . "/css/review-admin-main.css", null, $this->version );
 
@@ -96,8 +102,9 @@ class DOM767_Review {
 
     ////////// load assate for front end //////////
     function dom767_load_review_front_assets() {
-        global $current_user;
+        global $current_user, $wpdb;
         $cur_user_id = get_current_user_id();
+        $is_comment_media   = get_option('dom767_review_seting_option_comment-media');
 
         wp_enqueue_style( 'dom767-review-main-css', DOM767_RIV_ASSETS_PUBLIC_DIR . "/css/dom_review_main.css", null, $this->version );
 
@@ -111,6 +118,7 @@ class DOM767_Review {
             'security'=> wp_create_nonce('ajax_nonce'),
             'current_user_id'=> $cur_user_id,
             'public_assets_dri'=> DOM767_RIV_ASSETS_PUBLIC_DIR,
+            'is_comment_media'=> $is_comment_media,
             'upload_form_nonce'=> wp_create_nonce("uploadingFile")
             )
         );

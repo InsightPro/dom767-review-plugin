@@ -6,6 +6,7 @@ jQuery(document).ready(function($){
   var current_user_id   = dom_review_list.current_user_id;
   var public_assets_dri = dom_review_list.public_assets_dri;
   var upload_form_nonce = dom_review_list.upload_form_nonce;
+  var is_comment_media  = dom_review_list.is_comment_media;
 
   /************************************** Get Ajax URL********************************/
   var ajaxURL = dom_review_list.ajax_url;
@@ -163,10 +164,16 @@ jQuery(document).ready(function($){
     var that = $(this);
     var that_parent = $(this).parent();
     var media_farm1 = $('.commentAndReply_media_form_div').html();
+    if (is_comment_media == 1) {
+      var media_button = '<button type="button" class="btn comment_media_form_show_btn" id="comment_media_form_show_btn"><i class="fas fa-image"></i></button>';
+    }else{
+      var media_button ='';
+    }
+    
 
     var media_farm = '<div class="dom767_comment_media_upload_wrap"><form id="dom767_comment_image_formId" class="dom767_comment_image_formId" method="post" enctype="multipart/form-data" autocomplete="off" ><input type="file" name="file[]" id="dom767_comments_file" multiple /><h2 class="drag_and_drop_text">Drag your images here or click in this area.</h2><input name="security" value="'+upload_form_nonce+'" type="hidden"><input name="action" value="comment_upload_file_callback" type="hidden"/><input name="submit" value="upload" type="submit" id="dom767-submit-comment-img" style="display: none" /><h4>Image Type png, jpeg, jpg only</h4></form><div class="dom767_show_coment_uploaded_img"></div><div class="comment_media_upload_loading_img"><img src="'+public_assets_dri+'/image/llF5iyg.gif" alt="" style=" " ><p>Media is Uploading...</p></div><div class="commetFormSubmitAndCloseBtn"><button type="button" class="btn comment_form_submit_btn" id="comment_form_submit_btn">Submit</button><button type="button" class="btn comment_form_close_btn" id="comment_form_close_btn">close</button></div></div>';
 
-    var htmlform = '<div class="review-comment-form-wrap"><h4>Leave a comment <button type="button" class="btn comment_media_form_show_btn" id="comment_media_form_show_btn"><i class="fas fa-image"></i></button></h4><form id="dom767_review_reply_form" action="" method="post" class="dom767_review_reply_form"><div class="comment-form-element"><input type="hidden" name="review_post_id" id="reply_post_id" value="'+review_post_id+'" ><input type="hidden" name="review_parent_id" id="review_parent_id" value="'+review_parent_id+'" ><input type="hidden" name="review_karma" id="review_karma" value="'+karma+'" ><label class="hide" for="review">Message</label><textarea id="review_text_area" class="review-input-fields" placeholder="Write your Comment" name="review" cols="40" rows="10"></textarea></div><input name="submit" class="comment-form-submit"  type="submit" id="dom767-comment-submit" value="submit" style="display: none;"></form><div class="comment-form-bottom-element">'+media_farm+'</div></div>';
+    var htmlform = '<div class="review-comment-form-wrap"><h4>Leave a comment '+media_button+'</h4><form id="dom767_review_reply_form" action="" method="post" class="dom767_review_reply_form"><div class="comment-form-element"><input type="hidden" name="review_post_id" id="reply_post_id" value="'+review_post_id+'" ><input type="hidden" name="review_parent_id" id="review_parent_id" value="'+review_parent_id+'" ><input type="hidden" name="review_karma" id="review_karma" value="'+karma+'" ><label class="hide" for="review">Message</label><textarea id="review_text_area" class="review-input-fields" placeholder="Write your Comment" name="review" cols="40" rows="10"></textarea></div><input name="submit" class="comment-form-submit"  type="submit" id="dom767-comment-submit" value="submit" style="display: none;"></form><div class="comment-form-bottom-element">'+media_farm+'</div></div>';
 
     //$(that_parent).after(htmlform);
     if (user_id != '0') {
@@ -209,7 +216,7 @@ jQuery(document).ready(function($){
   });
 
 
-  /******************************** Edid form open ******************************/
+  /******************************** Edit form open ******************************/
 
   $(document).on('click', '#dom767_review_edit_button', function poen_review_edit_form(e){
 
