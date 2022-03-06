@@ -491,7 +491,7 @@ function bootstrapTableQuery(){
                 <div class="modal-body">
                   <form id="dom767_admin_review_media_form" action="" method="post" class="dom767_admin_review_media_form">
                         <img src="" alt="" style="height: auto; max-width: 465px">
-                        <input name="action" value="dom767_adminReviewMedia" type="hidden"/>
+                        <!-- <input name="action" value="dom767_adminReviewMedia" type="hidden"/> -->
                         <input type="hidden" name="review_id" value="">
                         <input type="hidden" name="media-url" value="">
                         <input type="hidden" name="media-name" value="">
@@ -826,23 +826,23 @@ function dom767_adminReviewEdit() {
 ///////////////////// delete review or comment  media for admin  ////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-add_action( 'wp_ajax_dom767_adminReviewMedia', 'dom767_adminReviewMedia' );
-add_action( 'wp_ajax_nopriv_dom767_adminReviewMedia', 'dom767_adminReviewMedia' );
+add_action( 'wp_ajax_dom767_adminReviewMediaDelete', 'dom767_adminReviewMediaDelete' );
+add_action( 'wp_ajax_nopriv_dom767_adminReviewMediaDelete', 'dom767_adminReviewMediaDelete' );
 
-function dom767_adminReviewMedia() {
+function dom767_adminReviewMediaDelete() {
 
     ob_start();
     global $wpdb;
       
     $review_ID         = isset( $_POST['review_id'] ) ? $_POST['review_id'] : NULL; 
     $media_url         = isset( $_POST['media_url'] ) ? $_POST['media_url'] : NULL; 
-    $img_name        = isset( $_POST['media_name'] ) ? $_POST['media_name'] : '';
-
+    $img_name          = isset( $_POST['media_name'] ) ? $_POST['media_name'] : '';
     $upload            = wp_upload_dir();// Upload directory
     $upload_location   = $upload['basedir'] .'/dom767_review_uploads/';
     $upload_url        = $upload['baseurl'] .'/dom767_review_uploads/';
     $review_table      = $wpdb->prefix . 'dom767_reviews';
     $review_meta_table = $wpdb->prefix . 'dom767_review_meta';
+    $file_to_delete    = $upload_location.$img_name;
 
     if ($review_ID != NULL) {
         $media_query = $wpdb->get_results('SELECT * FROM wp_dom767_review_meta WHERE review_id ='.$review_ID.' AND meta_key = "dom767_review_uploads" ORDER BY review_ID DESC');
@@ -856,8 +856,7 @@ function dom767_adminReviewMedia() {
             }
         }
 
-
-
+        $array_count = count($media_name_array);
         $new_name_arr = [];
         foreach ($media_name_array as $media_name) {
           if ($media_name != $img_name) {
@@ -874,7 +873,15 @@ function dom767_adminReviewMedia() {
 
         $where = array('meta_id' => $meta_id );
         $tablename = $wpdb->prefix.'dom767_review_meta';
-        $wpdb->update( $tablename, $data, $where );
+        if ($array_count > 1) {
+            if ($wpdb->update( $tablename, $data, $where )) {
+                unlink($file_to_delete);
+            }
+        }else{
+            if ($wpdb->delete( $tablename, $where )) {
+                unlink($file_to_delete);
+            }
+        }
 
     }//end if
 
@@ -916,7 +923,7 @@ function dom767_adminReviewAprove() {
         }
 
         $data=array( 
-            'review_approved'        => $newStatus
+            'review_approved' => $newStatus
         );
         $where = array('review_ID' => $review_ID );
         $tablename = $wpdb->prefix.'dom767_reviews';

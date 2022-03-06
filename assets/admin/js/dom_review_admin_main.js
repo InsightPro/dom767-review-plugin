@@ -308,13 +308,14 @@ jQuery(document).ready(function ($) {
   		$('#dom767_admin_review_media_form').find('input[name="media-name"]').val(name);
   		$('#dom767_admin_review_media_form').find('img').attr('src',url);
   		$('.mediaModalMediaName').text(name);
-
+  		//console.log(name);
 		e.preventDefault();
   	});
 
-  	$('#admin_review_media_form_update_btn').on('click', function(event) {
+  	$(document).on('click', '#admin_review_media_form_update_btn', function (e){
   		var form = $('form#dom767_admin_review_media_form');
     	form.find('input[type=submit]').click();
+  		//console.log('test');
   	});	   	
 
   	$(document).on('submit', '#dom767_admin_review_media_form', function adminReviewMediaSubmit(e){
@@ -328,10 +329,10 @@ jQuery(document).ready(function ($) {
 	    var review_id 	= dataObj['review_id'];
 	    var media_url 	= dataObj['media-url'];
 	    var media_name 	= dataObj['media-name'];
-
+	    //console.log(review_id);
 
 	    var ajax_data ={
-		  	action: "dom767_adminReviewMedia",
+		  	action: "dom767_adminReviewMediaDelete",
 		  	security: dom_admin_review_list.security,
 		  	review_id: review_id,
 		  	media_url: media_url,
@@ -354,15 +355,14 @@ jQuery(document).ready(function ($) {
 
   	});
 
-
-  	$('.close_media_modal').on('click', function(event) {
+  	$(document).on('click', '.close_media_modal', function(e){
   		$('.dom767_adminReviewMediaSingle').fadeIn(1);
   	});	  	
 
   	/////////////////////////////////////////////////////////////////////////////////////
   	//////////////////////////// Edit review from admin by ajax ////////////////////////
   	////////////////////////////////////////////////////////////////////////////////////
-  	$('.close_edit_modal').on('click', function(event) {
+  	$(document).on('click', '.close_edit_modal', function(e){
   		$('.dom767_adminReviewEdit').text('Edit');
   	});	  	
 
@@ -392,11 +392,10 @@ jQuery(document).ready(function ($) {
   	////////////////////////////// admin review edit form submit ///////////////////////////////
   	////////////////////////////////////////////////////////////////////////////////////////////
 
-  	$('#admin_review_edit_form_update_btn').on('click', function(event) {
-
+  	$(document).on('click', '#admin_review_edit_form_update_btn', function(e){
   		var form = $('form#dom767_admin_review_edit_form');
     	form.find('input[type=submit]').click();
-  		//event.preventDefault();
+  		//e.preventDefault();
   	});	   	
 
 
