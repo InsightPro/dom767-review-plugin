@@ -45,7 +45,7 @@ function dom767_post_total_review($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
   
-  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0');
+  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0 AND review_approved = 1');
 
   $total_review = count($review_query);
   //$total_rating = round($total_rating, 2);
@@ -196,7 +196,7 @@ function dom767_post_total_rating($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
 
-  $rating_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0');
+  $rating_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0 AND review_approved = 1');
 
   $sum = 0;
   foreach ($rating_query as  $rating) {
@@ -219,7 +219,7 @@ function get_post_total_star_rating($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
 
-  $rating_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0  AND review_type = "review"');
+  $rating_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0 AND review_approved = 1 AND review_type = "review"');
 
   $sum = 0;
   foreach ($rating_query as  $rating) {
@@ -252,6 +252,7 @@ function get_post_total_star_rating($post_id){
 ///////////////////////////////////////////////////////////////////////////////////
 
 function dom767_review_media_form(){
+
   global $wpdb, $post;
   ?>
   <div class="dom767_review_media_upload_wrap">
@@ -388,7 +389,7 @@ function is_user_comment_on_review($review_ID){
 function get_review_comment_count($review_ID){
   global $wpdb, $post;
   //$post_id = ($post_id != '')? $post_id : get_the_ID();
-  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' ORDER BY review_ID DESC');
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' AND review_approved = 1 ORDER BY review_ID DESC');
   $reply_count = count($review_query);
   return $reply_count;
 }
@@ -400,7 +401,7 @@ function get_review_comment_count($review_ID){
 function get_comment_reply_count($review_ID){
   global $wpdb, $post;
   //$post_id = ($post_id != '')? $post_id : get_the_ID();
-  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' ORDER BY review_ID DESC');
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_parent = '.$review_ID.' AND review_approved = 1 ORDER BY review_ID DESC');
   $reply_count = count($review_query);
   return $reply_count;
 }
@@ -411,7 +412,7 @@ function get_comment_reply_count($review_ID){
 function get_review_CommentAndReply_count($review_ID){
   global $wpdb, $post;
   //$post_id = ($post_id != '')? $post_id : get_the_ID();
-  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_karma = '.$review_ID.' ORDER BY review_ID DESC');
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_karma = '.$review_ID.' AND review_approved = 1 ORDER BY review_ID DESC');
   $reply_count = count($review_query);
   return $reply_count;
 }
@@ -463,7 +464,7 @@ function get_review_reply($post_id, $parent_ID){
   $upload_location  = $upload['basedir'] .'/dom767_review_uploads/';
   $upload_url       = $upload['baseurl'] .'/dom767_review_uploads/';
   $post_id          = ($post_id != '')? $post_id : get_the_ID();
-  $reply_query      = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
+  $reply_query      = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_approved = 1 AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
   //var_dump($reply_query);
   foreach ($reply_query as $query_data) {
     $review_ID            = $query_data->review_ID;
@@ -604,7 +605,7 @@ function get_review_comments($post_id, $parent_ID){
   $post_id          = ($post_id != '')? $post_id : get_the_ID();
   $is_comment_edit  = get_option('dom767_review_seting_option_comment-edit');
   $is_comment_media = get_option('dom767_review_seting_option_comment-media');
-  $reply_query      = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
+  $reply_query      = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_approved = 1 AND review_parent ='.$parent_ID.' ORDER BY review_ID DESC');
 
   foreach ($reply_query as $query_data) {
     $review_ID            = $query_data->review_ID;
@@ -693,9 +694,7 @@ function get_review_comments($post_id, $parent_ID){
           <?php if ($media_query): ?>
             <?php foreach ($media_name_array as $media_name): ?>
               <div class="review_list_media_single">
-                <div class="review_list_file_overlay">
-                <a href="<?php echo $upload_url.$media_name ?>" class="dom767_review_list_image item__overlay" target="blank">
-                </a>
+                <div class="review_list_file_overlay" data-src="<?php echo $upload_url.$media_name ?>" data-toggle="modal" data-target="#dom767-public-review-media-modal" >
                   <i class="fa-solid fa-eye"></i>
                 </div>
                 <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
@@ -758,7 +757,7 @@ function get_review($post_id){
   global $wpdb, $post;
   $post_id = ($post_id != '')? $post_id : get_the_ID();
 
-  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0 ORDER BY review_ID DESC');
+  $review_query = $wpdb->get_results('SELECT * FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_approved = 1 AND review_parent = 0 ORDER BY review_ID DESC');
 
   $review_query_arr = array();
 
@@ -886,14 +885,14 @@ function review_list_template($post_id, $page_no){
               $is_user_commented    = is_user_comment_on_review($review_ID);
 
               //////////////////////// review meta query ///////////////////////////////
-
-              $media_query = $wpdb->get_results('SELECT meta_value FROM wp_dom767_review_meta WHERE review_id ='.$review_ID.' AND meta_key = "dom767_review_uploads" ORDER BY review_ID DESC');
+              $review_meta_table = $wpdb->prefix . 'dom767_review_meta';
+              $media_query = $wpdb->get_results('SELECT meta_value FROM '.$review_meta_table.' WHERE review_id ='.$review_ID.' AND meta_key = "dom767_review_uploads" ORDER BY review_ID DESC');
 
               $media_name_array = $media_query[0]->meta_value;
               $media_name_array  = explode(",",$media_name_array);///string to array
               //var_dump($media_query);
 
-              $vote_query = $wpdb->get_results('SELECT * FROM wp_dom767_review_meta WHERE review_id ='.$review_ID.' AND meta_key = "dom_review_vote" ORDER BY review_ID DESC');
+              $vote_query = $wpdb->get_results('SELECT * FROM '.$review_meta_table.' WHERE review_id ='.$review_ID.' AND meta_key = "dom_review_vote" ORDER BY review_ID DESC');
               
               $total_like = 0;
               $total_dislike = 0;
@@ -948,9 +947,7 @@ function review_list_template($post_id, $page_no){
                       <?php if ($media_query): ?>
                         <?php foreach ($media_name_array as $media_name): ?>
                           <div class="review_list_media_single">
-                            <div class="review_list_file_overlay">
-                            <a href="<?php echo $upload_url.$media_name ?>" class="dom767_review_list_image item__overlay" target="blank">
-                            </a>
+                            <div class="review_list_file_overlay" data-src="<?php echo $upload_url.$media_name ?>" data-toggle="modal" data-target="#dom767-public-review-media-modal" >
                               <i class="fa-solid fa-eye"></i>
                             </div>
                             <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
@@ -1252,7 +1249,7 @@ function dom767_review_form_submit() {
 
 
 
-  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0');
+  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_approved = 1 AND review_parent = 0');
   $total_review = count($review_query);
 
   $sum = 0;
@@ -1388,7 +1385,7 @@ function dom767_reply_form_submit() {
   echo review_list_template($post_id, $page_no);
 
   /////////////////////////////////////////////////////////////////////////////
-  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_parent = 0');
+  $review_query = $wpdb->get_results('SELECT review_rating FROM wp_dom767_reviews WHERE review_post_ID ='.$post_id.' AND review_approved = 1 AND review_parent = 0');
   $total_review = count($review_query);
 
   $sum = 0;
@@ -1738,7 +1735,7 @@ function dom767_review_upload_file_callback(){
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////// comment nad reply file upload by ajax ////////////////////////
+////////////////////////// comment and reply file upload by ajax ////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
 add_action('wp_ajax_nopriv_comment_upload_file_callback', 'dom767_comment_upload_file_callback');
@@ -2104,6 +2101,8 @@ function dom767_review_load_more(){
   $page            = isset( $_POST['page'] ) ? $_POST['page'] : 1;
   $orderBy         = isset( $_POST['filteredBy'] ) ? $_POST['filteredBy'] : NULL;
   $review_query    = get_review($post_id);
+  $is_review_edit  = get_option('dom767_review_seting_option_review-edit');
+  $is_review_media = get_option('dom767_review_seting_option_review-media');
 
   if ($orderBy == 'oldest') {
     $review_query  =  array_reverse($review_query);
@@ -2204,7 +2203,12 @@ function dom767_review_load_more(){
             </div>
             <?php if ($media_query): ?>
               <?php foreach ($media_name_array as $media_name): ?>
-                <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
+                <div class="review_list_media_single">
+                  <div class="review_list_file_overlay" data-src="<?php echo $upload_url.$media_name ?>" data-toggle="modal" data-target="#dom767-public-review-media-modal" >
+                    <i class="fa-solid fa-eye"></i>
+                  </div>
+                  <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
+                </div>
               <?php endforeach ?>
             <?php endif ?>
             <ul class="list-inline d-sm-flex my-0">
@@ -2228,7 +2232,7 @@ function dom767_review_load_more(){
                 </span>
               </li>
               <?php endif ?>
-              <?php if ($user_id == $current_user_id  ): ?>
+              <?php if ($user_id == $current_user_id && $is_review_edit == 1): ?>
               <li class="list-inline-item ml-auto">
                 <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                   <i class="fa fa-edit"></i>
@@ -2284,7 +2288,7 @@ add_action( 'wp_ajax_review_filter', 'dom767_review_filter' );
 function dom767_review_filter(){
   ob_start();
   global $wpdb, $post;
-
+  $current_user_id = get_current_user_id();
   $upload_dir      = wp_upload_dir();// Upload directory
   $upload_location = $upload_dir['basedir'] .'/dom767_review_uploads/';
   $upload_url      = $upload_dir['baseurl'] .'/dom767_review_uploads/';
@@ -2293,6 +2297,8 @@ function dom767_review_filter(){
   $orderBy         = isset( $_POST['filteredBy'] ) ? $_POST['filteredBy'] : NULL;
   $page_no         = isset( $_POST['page'] ) ? $_POST['page'] : 1;
   $review_query    = get_review($post_id);
+  $is_review_edit  = get_option('dom767_review_seting_option_review-edit');
+  $is_review_media = get_option('dom767_review_seting_option_review-media');
 
   if ($orderBy == 'oldest') {
     $review_query  =  array_reverse($review_query);
@@ -2392,10 +2398,17 @@ function dom767_review_filter(){
                 <p class="review-content-text"><?php echo $review_content ?></p>
               </div>
             </div>
-            <?php if ($media_query): ?>
-              <?php foreach ($media_name_array as $media_name): ?>
-                <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
-              <?php endforeach ?>
+            <?php if ($is_review_media == 1): ?>
+              <?php if ($media_query): ?>
+                <?php foreach ($media_name_array as $media_name): ?>
+                  <div class="review_list_media_single">
+                    <div class="review_list_file_overlay" data-src="<?php echo $upload_url.$media_name ?>" data-toggle="modal" data-target="#dom767-public-review-media-modal" >
+                      <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <img src="<?php echo $upload_url.$media_name ?>" alt="" style="height: 100px; width: 100px;" >
+                  </div>
+                <?php endforeach ?>
+              <?php endif ?>
             <?php endif ?>
             <ul class="list-inline d-sm-flex my-0">
               <li class="list-inline-item g-mr-20">
@@ -2418,7 +2431,7 @@ function dom767_review_filter(){
                 </span>
               </li>
               <?php endif ?>
-              <?php if ($user_id == $current_user_id): ?>
+              <?php if ($user_id == $current_user_id && $is_review_edit == 1): ?>
               <li class="list-inline-item ml-auto">
                 <span class="dom767_review_edit_button" id="dom767_review_edit_button" data-review_ID="<?php echo $review_ID ?>" data-post_id="<?php echo $post_id ?>" data-user_id="<?php echo get_current_user_id() ?>" >
                   <i class="fa fa-edit"></i>

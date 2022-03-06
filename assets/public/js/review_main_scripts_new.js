@@ -91,6 +91,11 @@ jQuery(document).ready(function($){
 
   });
 
+  /************************************modal**************************************/
+  var modal_html = '<div class="modal public-review-media-modal" id="dom767-public-review-media-modal"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Media Name: <span class="mediaModalMediaName"></span></h4><button type="button" class="close btn close_media_modal" data-dismiss="modal">&times;</button></div><div class="modal-body"><img id="dom767-public-review-modal-image" src="" alt=""></div><div class="modal-footer"><button type="button" class="btn btn-primary close_media_modal" data-dismiss="modal">Close</button></div></div></div></div>';
+  //$('body').append(modal_html);
+  $('footer').before(modal_html);
+
   /******************************* Show 1 comment **********************************/
   $(".comments-single-info").each(function(){
     $(".comments-single-info:first-child").css('display', 'inline-flex');
@@ -154,7 +159,6 @@ jQuery(document).ready(function($){
 
   $(document).on('click', '.dom767_review_reply_button', function poen_review_comment_form(e){
 
-    $(this).fadeOut();
     $('.review-comment-form-wrap').remove();
     $('.review-edit-form-wrap').remove();
     var review_post_id = $(this).attr('data-post_id');
@@ -177,6 +181,7 @@ jQuery(document).ready(function($){
 
     //$(that_parent).after(htmlform);
     if (user_id != '0') {
+      $(this).fadeOut();
       $(that_parent).parent().after(htmlform);
     }else{
       $('.dom767-review-alert-danger').remove();
@@ -798,6 +803,17 @@ jQuery(document).ready(function($){
 
 
   /**************************************************************************/
+  $(document).on('click', '.review_list_file_overlay',function(e){
+    //$(this).parent().fadeOut();
+    var mimge_url = $(this).attr('data-src');
+    $('#dom767-public-review-modal-image').attr('src', mimge_url)
+    console.log(mimge_url);
+    e.preventDefault();
+  });
+
+
+
+  /*****************************************************************************/  
   $(document).on('click', '.review_alert_close',function(e){
     //$(this).parent().fadeOut();
     $(this).parent().remove();

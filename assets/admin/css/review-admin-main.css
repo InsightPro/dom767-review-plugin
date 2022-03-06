@@ -58,14 +58,87 @@ tr:nth-child(even) {
 ul.review_admin_paginations_ul {
     display: inline-flex;
 }
-.review-btn-dange{
-	color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545 !important;
-}
-.review-btn-dange:hover {
-    color: #fff !important;
-    background-color: #c82333;
-    border-color: #bd2130;
+
+table#dom767_review_list_admin tbody tr td:last-child {
+    min-width: 220px;
 }
 
+th.sorting_disabled:nth-child(6) {
+    width: 70px !important;
+}
+
+th.sorting_disabled:nth-child(6) input {
+    width: 70px !important;
+}
+form#dom767_admin_review_edit_form {
+    display: grid;
+}
+form#dom767_admin_review_edit_form input {
+    margin-bottom: 20px;
+}
+form#dom767_admin_review_edit_form textarea {
+    margin-bottom: 20px;
+}
+
+td.admin_review_media_td {
+    width: 305px;
+}
+
+.admin-review-edit-modal .modal-backdrop {
+  background-color:#fff !important;
+}
+.modal-content {
+  background-color:#fff !important;
+}
+
+.dom767_adminReviewMedia:hover {
+    cursor: pointer;
+}
+.dom767_adminReviewMediaSingle{
+  position: relative;
+}
+
+.dom767_adminReviewMedia {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: 2;
+}
+.dom767_adminReviewMediaSingle {
+    display: inline-block;
+}
+i.fas.fa-eye.adminReviewMediaViewIcon {
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    color: #fff;
+    display: none;
+}
+
+.dom767_adminReviewMedia {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    z-index: 2;
+    background: #0a0a0a73;
+    display: none;
+}
+.dom767_adminReviewMediaSingle:hover .dom767_adminReviewMedia{
+  display: block;
+}
+.dom767_adminReviewMediaSingle:hover i.fas.fa-eye.adminReviewMediaViewIcon{
+  display: block;
+}
+img.adminReviewImgDeleteLoader {
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    
+}
+.dislpayNone{
+  display: none;
+}

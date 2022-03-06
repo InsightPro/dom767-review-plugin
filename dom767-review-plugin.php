@@ -132,7 +132,7 @@ class DOM767_Review {
 new DOM767_Review();
 
 
-require plugin_dir_path( __FILE__ ) . 'revieworite_functions.php';
+require plugin_dir_path( __FILE__ ) . 'review_functions.php';
 require plugin_dir_path( __FILE__ ) . 'classes/admin/option_page_class.php';
 require plugin_dir_path( __FILE__ ) . 'includes/view_all_review.php';
 
