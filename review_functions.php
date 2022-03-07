@@ -1140,6 +1140,123 @@ function get_review_form_wrap($post_id) {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// get review form by short code /////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+
+add_shortcode( 'dom767_review_form_wrap', 'get_review_form_wrap_shortcode' );
+//// print as //echo do_shortcode('[dom767_review_form_wrap post_id="'.get_the_ID().'"]');
+
+function get_review_form_wrap_shortcode($post_id) {
+
+  $post_id = ($post_id != '')? $post_id : get_the_ID();
+  $total_review     = dom767_post_total_review($post_id);
+  $did_user_review  = dom767_did_user_review($post_id);
+  $page_no = 1;
+  $is_review_media   = get_option('dom767_review_seting_option_review-media');
+  ?>
+  <div class="review-form-and-list-wrap" >
+    <div class="review-form-wrap">
+      <h2 class="review-wrapper-heading">Review </h2>
+      <div class="row">
+          <div class="col-md-6">
+              <div class="card">
+                  <div class="card-body text-center">
+                    <h4 class="rating-heading">
+                      <span id="total_review_count" ><?php echo $total_review ?></span> 
+                      <span id="total_review_text" >
+                        <?php echo ($total_review > 1)? 'Reviews' : 'Review'; ?>
+                      </span> 
+                    </h4> 
+                    <h4>and</h4>
+                    <div class="dom767_total_rating_text">
+                      <h4><span class="dom767_total_rating_val"><?php echo dom767_post_total_rating($post_id) ?> </span> rating</h4>
+                    </div>
+                    <div class="dom767_post_total_ratimg_star">
+                      <?php echo get_post_total_star_rating($post_id) ?>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+        <?php if ($did_user_review != 0 &&  is_user_logged_in()): ?>
+          <div class="did_user_review_text">
+            <h4 class="did_user_review_text_h4"> You have already reviewed this post <?php echo get_current_user_post_rating($post_id) ?> Rating</h4>
+          </div>
+        <?php endif ?>
+      <?php 
+      if (is_user_logged_in() && $did_user_review == 0) { ?>
+        <div class="dom767_review_form_wrap">
+          <div class="dom767_review_and_rating_wrap">
+            <form id="dom767_review_form" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post" class="dom767_review_form">
+              <div class="review-form-element card">
+                <h4 class="live_a_review_text_h4"> Leave a Review </h4>
+                <input type="hidden" name="review_post_id" id="review_post_id" value="<?php echo $post_id  ?>" >
+                <label class="hide" for="review">Message</label>
+                <textarea id="review_text_area" class="review-input-fields" placeholder="Write your Review" name="review" cols="40" rows="10"></textarea>
+                <div class="review_form_rating_star_wrap"> 
+                  <h4 class="rating-heading">Rate us</h4>
+                  <fieldset class="dom767-rating"> 
+                    <input type="radio" id="star5" class="revRadioBtn" name="rating" value="5" />
+                    <label class="full" for="star5" title="Awesome - 5 stars"></label> 
+
+                    <input type="radio" id="star4half" class="revRadioBtn" name="rating" value="4.5" />
+                    <label class="half" for="star4half" title="VERY GOOD - 4.5 stars"></label> 
+
+                    <input type="radio" id="star4" class="revRadioBtn" name="rating" value="4" /><label class="full" for="star4" title="VERY GOOD - 4 stars"></label> 
+
+                    <input type="radio" id="star3half" class="revRadioBtn" name="rating" value="3.5" /><label class="half" for="star3half" title="OK - 3.5 stars"></label> 
+
+                    <input type="radio" id="star3" class="revRadioBtn" name="rating" value="3" /><label class="full" for="star3" title="OK - 3 stars"></label> 
+
+                    <input type="radio" id="star2half" class="revRadioBtn" name="rating" value="2.5" /><label class="half" for="star2half" title="BAD - 2.5 stars"></label> 
+
+                    <input type="radio" id="star2" class="revRadioBtn" name="rating" value="2" /><label class="full" for="star2" title="BAD - 2 stars"></label> 
+
+                    <input type="radio" id="star1half" class="revRadioBtn" name="rating" value="1.5" /><label class="half" for="star1half" title="BAD - 1.5 stars"></label> 
+
+                    <input type="radio" id="star1" class="revRadioBtn" name="rating" value="1" /><label class="full" for="star1" title="VERY BAD - 1 star"></label> 
+
+                    <input type="radio" id="starhalf" class="revRadioBtn" name="rating" value="0.5" /><label class="half" for="starhalf" title="VERY BAD - 0.5 stars"></label> 
+                  </fieldset>
+                  <div class="dom767_myratings_wraps" style="display: none">
+                    <h4 class="rating-heading">Your Rating Value is : </h4>
+                    <span class="dom767_myratings">00</span>
+                  </div>
+
+                  <?php if ($is_review_media == 1): ?>
+                  <div class="media_form_show_hide_btn">
+                     <i class="fas fa-image"></i>
+                  </div>
+                  <?php endif ?>
+                </div>
+
+              </div>
+              <input name="submit" class="form-submit-button"  type="submit" id="dom767-submit-review" value="submit" style="display: none">
+            </form>
+          </div>
+          <?php if ($is_review_media == 1): ?>
+          <?php echo dom767_review_media_form() ?>
+          <?php endif ?>
+          <div class="dom767_review_form_submit_btn_wrap">
+            <button type="button" class="btn btn-success" id="dom767_review_form_submit_btn">Leave Your Review</button>
+          </div>
+        </div>
+      <?php
+      }/// end if did user review
+      ?>
+
+    </div> 
+
+    <div class="review_list_wrap_main" id="review_list_wrap_main" >
+      <?php echo review_list_template($post_id, $page_no); ?>
+    </div>
+  </div>
+
+  <?php
+  return;
+
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// review form submit by ajax ///////////////////////////////
@@ -1197,10 +1314,10 @@ function dom767_review_form_submit() {
       $user_email   = $current_user->user_email ;
       $user_url     = $current_user->user_url ;
 
+      $aprove_options = get_option('dom767_review_seting_option_review-aprove-when-submit');
       $lastid = $wpdb->get_results('SELECT review_ID FROM wp_dom767_reviews ORDER BY review_ID DESC LIMIT 1');
       $lastid = ($lastid)? $lastid[0]->review_ID : 0 ;
       $lastid = $lastid + 1;
-      $timestamp = time();
 
       $data=array(
         'review_ID'           => $lastid, 
@@ -1208,13 +1325,13 @@ function dom767_review_form_submit() {
         'review_author'       => $display_name, 
         'review_author_email' => $user_email,
         'review_author_url'   => $user_url, 
-        'review_author_IP'    => $ipaddress, 
+        'review_author_IP'    => $ipaddress,
         'review_date'         => time(), 
         'review_date_gmt'     => time(), 
         'review_content'      => $form_data_arr['review'], 
         'review_karma'        => 0, 
         'review_rating'       => $form_data_arr['rating'], 
-        'review_approved'     => 1, 
+        'review_approved'     => $aprove_options, 
         'review_agent'        => $_SERVER['HTTP_USER_AGENT'], 
         'review_type'         => 'review',
         'review_parent'       => 0, 
@@ -1327,6 +1444,8 @@ function dom767_reply_form_submit() {
           $ipaddress = 'UNKNOWN';
       }
 
+      
+      $aprove_options = get_option('dom767_review_seting_option_comment-aprove-when-submit');
       $current_user = wp_get_current_user();
       $display_name = $current_user->display_name;
       $user_email  = $current_user->user_email ;
@@ -1349,7 +1468,7 @@ function dom767_reply_form_submit() {
         'review_content'      => $form_data_arr['review'], 
         'review_karma'        => $karma, 
         'review_rating'       => 0, 
-        'review_approved'     => 1, 
+        'review_approved'     => $aprove_options, 
         'review_agent'        => $_SERVER['HTTP_USER_AGENT'], 
         'review_type'         => $commentType,
         'review_parent'       => $parent_id, 

@@ -46,7 +46,7 @@ class Dom767_review_Option_Page{
     //die();
     check_admin_referer("dom767_review");
 
-    $settingTypes = array('review-media','comment-media', 'review-edit', 'comment-edit', 'review-filter-oldest', 'review-filter-high-rating', 'review-filter-low-rating');
+    $settingTypes = array('review-media','comment-media', 'review-edit', 'comment-edit', 'review-filter-oldest', 'review-filter-high-rating', 'review-filter-low-rating', 'review-aprove-when-submit', 'comment-aprove-when-submit');
     foreach ($settingTypes as $settingType) {
       if (isset($_POST['dom767_review_seting_option_'.$settingType])) {
         update_option('dom767_review_seting_option_'.$settingType, sanitize_text_field($_POST['dom767_review_seting_option_'.$settingType]));
