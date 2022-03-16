@@ -922,7 +922,11 @@ function review_list_template($post_id, $page_no){
                 <div class="review_card reviewer-single-info">
                   <div class="single-rev-avater">
                     <div class="reviewer-avater">
+                      <?php if ($user_id == 0 && $review_agent == 'google'): ?>
+                      <img src="<?php echo $review_author_url ?>" alt="">
+                      <?php else: ?>
                       <?php echo get_avatar( $user_id ); ?>
+                      <?php endif ?>
                     </div>
                   </div>
                   <div class="reviewer-single-info-data">
@@ -2301,7 +2305,11 @@ function dom767_review_load_more(){
         <div class="review_card reviewer-single-info">
           <div class="single-rev-avater">
             <div class="reviewer-avater">
+              <?php if ($user_id == 0 && $review_agent == 'google'): ?>
+              <img src="<?php echo $review_author_url ?>" alt="">
+              <?php else: ?>
               <?php echo get_avatar( $user_id ); ?>
+              <?php endif ?>
             </div>
           </div>
           <div class="reviewer-single-info-data">
@@ -2313,7 +2321,7 @@ function dom767_review_load_more(){
               
             </div>
             <div class="review_date_div">
-              <p class="review-date-text"> <?php echo _time_ago(strtotime($review_date)) ?></p>
+              <p class="review-date-text"> <?php echo _time_ago($review_date) ?></p>
             </div>
             <div class="review-content-div">
               <div class="review-content">
@@ -2496,7 +2504,11 @@ function dom767_review_filter(){
         <div class="review_card reviewer-single-info">
           <div class="single-rev-avater">
             <div class="reviewer-avater">
+              <?php if ($user_id == 0 && $review_agent == 'google'): ?>
+                <img src="<?php echo $review_author_url ?>" alt="">
+              <?php else: ?>
               <?php echo get_avatar( $user_id ); ?>
+              <?php endif ?>
             </div>
           </div>
           <div class="reviewer-single-info-data">
